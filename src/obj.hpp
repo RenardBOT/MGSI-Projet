@@ -16,6 +16,6 @@ using namespace std;
  * @param halfedges Vecteur de demi-arêtes à remplir
  * @return void
  */
-void readObjFile(const char *filename, vector<vertex> &vertices, vector<face> &faces, vector<halfedge> &halfedges)
+void readObjFile(const char *filename, vector<vertex> &vertices, vector<face> &faces, vector<halfedge> &halfedges);
 
 #endif /* OBJ_HPP */
