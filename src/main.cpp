@@ -8,8 +8,6 @@
 #include <vector>
 
 #include "shader.hpp"
-#include "halfedge.hpp"
-#include "obj.hpp"
 
 #define ROUGE 1.0f, 0.0f, 0.0f
 #define BLEU 0.0f, 0.0f, 1.0f
@@ -87,32 +85,7 @@ void rotate(int x, int y);
 SDL_Surface *screen;
 //********************************************
 int main(int argc, char **argv)
-{ 
-
-  vector<v> verticesIn;
-  vector<f> facesIn;
-  vector<vertex> verticesOut;
-  vector<face> facesOut;
-  vector<halfedge> halfedgesOut;
-
-  readObjFile("meshes/hexagone.obj", verticesIn, facesIn);
-
-  printV(verticesIn);
-  printF(facesIn);
-
-  cout << "*************" << endl;
-
-  buildHalfEdge(verticesIn,facesIn,verticesOut,facesOut,halfedgesOut);
-
-  printVertices(verticesOut);
-  cout << "*************" << endl;
-  printFaces(facesOut);
-  cout << "*************" << endl;
-  printHalfedges(halfedgesOut);
-
-
-  exit(EXIT_FAILURE);
-
+{
   // initialize SDL video
   if (SDL_Init(SDL_INIT_VIDEO) < 0)
   {
