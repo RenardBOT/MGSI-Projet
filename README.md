@@ -12,7 +12,7 @@ Se déplacer dans bin, et y executer mgsi ne marchera PAS.\
 **A ne pas faire :**
 ```bash
 ~/<chemin>/MGSI-Projet$  cd bin/
-~/<chemin>/MGSI-Projet$  ./mgsi
+~/<chemin>/MGSI-Projet/bin$  ./mgsi
 ```
 
 ## Installation des librairies
