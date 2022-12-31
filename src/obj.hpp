@@ -49,6 +49,15 @@ struct f{
 void readObjFile(const char *filename, vector<v> &vertices, vector<f> &faces);
 
 /**
+ * @brief Fonction qui récupère le sommet d'une face à un indice donné
+ * 
+ * @param index la valeur à récupérer entre 0 et 2
+ * @param f la face qui contient les sommets
+ * @return int l'indice du sommet
+ */
+int getVertex(int index, f * face);
+
+/**
  * Fonction qui affiche un tableau de sommets
  * 
  * @param vertices Tableau de sommets à afficher

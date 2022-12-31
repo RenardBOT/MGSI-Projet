@@ -91,9 +91,9 @@ int main(int argc, char **argv)
 
   vector<v> verticesIn;
   vector<f> facesIn;
-  vector<vertex> verticesOut;
-  vector<face> facesOut;
-  vector<halfedge> halfedgesOut;
+  vector<vertex*> verticesOut;
+  vector<face*> facesOut;
+  vector<halfedge*> halfedgesOut;
 
   readObjFile("meshes/hexagone.obj", verticesIn, facesIn);
 

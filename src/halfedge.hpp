@@ -59,10 +59,13 @@ struct halfedge {
  * Fonction qui prend en entrée un tableau de v et un tableau de faces et qui remplit les vecteurs de sommets, faces et demi-arêtes passés en paramètre
  * 
  */
-void buildHalfEdge( vector<v> &verticesIn, vector<f> &facesIn, vector<vertex> &verticesOut, vector<face> &facesOut, vector<halfedge> &halfedgesOut);
+void buildHalfEdge( vector<v> &verticesIn, vector<f> &facesIn, vector<vertex*> &verticesOut, vector<face*> &facesOut, vector<halfedge*> &halfedgesOut);
 
-void printVertices(vector<vertex> &vertices);
-void printFaces(vector<face> &faces);
-void printHalfedges(vector<halfedge> &halfedges);
+int getVertexId(vertex * v);
+int getFaceId(face * f);
+int getHalfedgeId(halfedge * he);
+void printVertices(vector<vertex*> &vertices);
+void printFaces(vector<face*> &faces);
+void printHalfedges(vector<halfedge*> &halfedges);
 
 #endif /* HALFEDGE_HPP */
