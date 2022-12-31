@@ -33,25 +33,6 @@ glm::mat4 View;
 glm::mat4 Model;
 glm::mat4 MVP;
 
-// Coordonnées xyz, couleurs rgb des sommets
-typedef struct
-{
-  GLfloat x;
-  GLfloat y;
-  GLfloat z;
-  GLfloat r;
-  GLfloat g;
-  GLfloat b;
-} Sommet;
-
-// vector pour stocker les sommets du cube et leur couleur
-std::vector<Sommet> Cube = {
-};
-
-// Tableau pour stocker les indices des sommets par face pour le cube
-std::vector<GLuint> indexFaceCube = {
-};
-
 // initialise à 0 = pas d’indice
 GLuint vbo = 0;
 GLuint ibo = 0;
