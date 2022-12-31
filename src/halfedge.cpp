@@ -1,32 +1,33 @@
 #include "halfedge.hpp"
 
-void buildHalfEdge( vector<v> &verticesIn, vector<f> &facesIn,vector<vertex*> &verticesOut, vector<face*> &facesOut, vector<halfedge*> &halfedgesOut){
-
+void buildHalfEdge(vector<v> &verticesIn, vector<f> &facesIn,
+                   vector<vertex *> &verticesOut, vector<face *> &facesOut,
+                   vector<halfedge *> &halfedgesOut) {
     // ALGORITHME DE REMPLISSAGE DE LA STRUCTURE HALF-EDGE
 
     // Index de départ pour chaque tableau
-    int idVertex = 1;   // Par convention, le premier sommet est le sommet 1
+    int idVertex = 1;  // Par convention, le premier sommet est le sommet 1
     int idFace = 0;
     int idHalfedge = 0;
-    
-    
+
     // Remplissage du tableau de sommets
-    for (v& vertexIn : verticesIn){
-        vertex * v = new vertex{idVertex++, vertexIn.x, vertexIn.y, vertexIn.z};
+    for (v &vertexIn : verticesIn) {
+        vertex *v = new vertex{idVertex++, vertexIn.x, vertexIn.y, vertexIn.z};
         verticesOut.push_back(v);
     }
 
     // Remplissage du tableau de faces
-    for (f& faceIn : facesIn){ 
-        face * f = new face{idFace++, nullptr};
+    for (f &faceIn : facesIn) {
+        face *f = new face{idFace++, nullptr};
         facesOut.push_back(f);
     }
 
-    // Parcours des faces pour remplir le tableau de demi-arêtes (manque les twins)
-    for(size_t faceIndex = 0; faceIndex < facesIn.size(); faceIndex++){
-        halfedge * h0 = new halfedge;   
-        halfedge * h1 = new halfedge;
-        halfedge * h2 = new halfedge;
+    // Parcours des faces pour remplir le tableau de demi-arêtes (manque les
+    // twins)
+    for (size_t faceIndex = 0; faceIndex < facesIn.size(); faceIndex++) {
+        halfedge *h0 = new halfedge;
+        halfedge *h1 = new halfedge;
+        halfedge *h2 = new halfedge;
 
         // Définition d'un id pour chaque demi-arête à des fins de débuggage
         h0->id = idHalfedge++;
@@ -34,10 +35,12 @@ void buildHalfEdge( vector<v> &verticesIn, vector<f> &facesIn,vector<vertex*> &v
         h2->id = idHalfedge++;
 
         // L'origine de chaque demi-arête est son sommet d'origine.
-        h0->origin = verticesOut[facesIn[faceIndex].v1-1];  // -1 car les indices des sommets commencent à 1
-        h1->origin = verticesOut[facesIn[faceIndex].v2-1];
-        h2->origin = verticesOut[facesIn[faceIndex].v3-1];
-        
+        h0->origin =
+            verticesOut[facesIn[faceIndex].v1 -
+                        1];  // -1 car les indices des sommets commencent à 1
+        h1->origin = verticesOut[facesIn[faceIndex].v2 - 1];
+        h2->origin = verticesOut[facesIn[faceIndex].v3 - 1];
+
         // Définition des demi-arêtes suivantes et précédentes
         h0->next = h1;
         h1->next = h2;
@@ -63,17 +66,19 @@ void buildHalfEdge( vector<v> &verticesIn, vector<f> &facesIn,vector<vertex*> &v
         halfedgesOut.push_back(h2);
     }
 
-    // Il reste à associer un twin à chaque demi-arête 
-    for (face * f : facesOut) {
-        halfedge* h = f->half_edge;
+    // Il reste à associer un twin à chaque demi-arête
+    for (face *f : facesOut) {
+        halfedge *h = f->half_edge;
 
-        if(h->twin != nullptr)  // Si elle a déjà un twin, pas besoin de le chercher
+        if (h->twin !=
+            nullptr)  // Si elle a déjà un twin, pas besoin de le chercher
             continue;
-        
+
         // Sinon on cherche un twin pour l'arête
         do {
-            for (halfedge * other_h : halfedgesOut) {
-                if (other_h->origin == h->next->origin && other_h->next->origin == h->origin) {
+            for (halfedge *other_h : halfedgesOut) {
+                if (other_h->origin == h->next->origin &&
+                    other_h->next->origin == h->origin) {
                     h->twin = other_h;
                     other_h->twin = h->twin;
                     break;
@@ -82,42 +87,42 @@ void buildHalfEdge( vector<v> &verticesIn, vector<f> &facesIn,vector<vertex*> &v
             h = h->next;
         } while (h != f->half_edge);
     }
-
 }
 
-void printVertices(vector<vertex*> &vertices){
+void printVertices(vector<vertex *> &vertices) {
     // Affichage des du sommet de la forme (id : x y z)
-    for (vector<vertex*>::iterator it = vertices.begin(); it != vertices.end(); ++it){
-        cout << "V " << (*it)->id << " : " << (*it)->x << " " << (*it)->y << " " << (*it)->z << endl;
+    for (vector<vertex *>::iterator it = vertices.begin(); it != vertices.end();
+         ++it) {
+        cout << "V " << (*it)->id << " : " << (*it)->x << " " << (*it)->y << " "
+             << (*it)->z << endl;
     }
 }
-void printFaces(vector<face*> &faces){
+void printFaces(vector<face *> &faces) {
     // Affichage des faces de la forme (id : h0 h1 h2)
-    for (vector<face*>::iterator it = faces.begin(); it != faces.end(); ++it){
+    for (vector<face *>::iterator it = faces.begin(); it != faces.end(); ++it) {
         cout << "F " << (*it)->id << " : " << (*it)->half_edge->id << endl;
     }
 }
-void printHalfedges(vector<halfedge*> &halfedges){
-    // Affichage des demi-arêtes de la forme (id : origin next prev twin incident_face)
-    cout << "Halfedge : origin next prev twin incident_face" << endl; 
-    
+void printHalfedges(vector<halfedge *> &halfedges) {
+    // Affichage des demi-arêtes de la forme (id : origin next prev twin
+    // incident_face)
+    cout << "Halfedge : origin next prev twin incident_face" << endl;
+
     int twinid;
-    for (vector<halfedge*>::iterator it = halfedges.begin(); it != halfedges.end(); ++it){
-        // On récupère l'id seulement s'il n'est pas nullptr, sinon il vaut -1 (arête sur le bord)
-        if((*it)->twin != nullptr)
+    for (vector<halfedge *>::iterator it = halfedges.begin();
+         it != halfedges.end(); ++it) {
+        // On récupère l'id seulement s'il n'est pas nullptr, sinon il vaut -1
+        // (arête sur le bord)
+        if ((*it)->twin != nullptr)
             twinid = (*it)->twin->id;
         else
             twinid = -1;
-        cout << "H " << (*it)->id  << " : " << (*it)->origin->id << " " << (*it)->next->id << " " << (*it)->prev->id << " " << twinid << " " << (*it)->incident_face->id << endl;
+        cout << "H " << (*it)->id << " : " << (*it)->origin->id << " "
+             << (*it)->next->id << " " << (*it)->prev->id << " " << twinid
+             << " " << (*it)->incident_face->id << endl;
     }
 }
 
-int getVertexId(vertex * v){
-    return v->id;
-}
-int getFaceId(face * f){
-    return f->id;
-}
-int getHalfedgeId(halfedge * h){
-    return h->id;
-}
+int getVertexId(vertex *v) { return v->id; }
+int getFaceId(face *f) { return f->id; }
+int getHalfedgeId(halfedge *h) { return h->id; }

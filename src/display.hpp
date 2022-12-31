@@ -3,16 +3,16 @@
 
 #include <GL/glew.h>
 #include <SDL/SDL.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 
 #include <cstdlib>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include <vector>
 
-#include "shader.hpp"
 #include "halfedge.hpp"
 #include "obj.hpp"
+#include "shader.hpp"
 
 #define ROUGE 1.0f, 0.0f, 0.0f
 #define BLEU 0.0f, 0.0f, 1.0f
@@ -56,8 +56,5 @@ void mouse(int bouton, int etat, int x, int y);
 void mousemotion(int x, int y);
 void rotate(int x, int y);
 //********************************************
-
-
-
 
 #endif /* DISPLAY_HPP */
