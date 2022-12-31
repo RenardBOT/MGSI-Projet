@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
     cout << "*************" << endl;
     printHalfedges(halfedgesOut);
 
-    exit(EXIT_SUCCESS);
+    // exit(EXIT_SUCCESS);
 
-    init(argc, argv);
+    initDisplay(argc, argv);
 }

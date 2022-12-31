@@ -29,7 +29,7 @@ void prepareProgammeShader(void) {
 /* Prototype des fonctions */
 
 //********************************************
-int init(int argc, char **argv) {
+int initDisplay(int argc, char **argv) {
     // initialize SDL video
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("Unable to init SDL: %s\n", SDL_GetError());
@@ -186,4 +186,8 @@ void rotate(int x, int y) {
     View = glm::rotate(View, (float)x * 0.006f, glm::vec3(0.0f, 1.0f, 0.0f));
     View = glm::rotate(View, (float)y * 0.006f, glm::vec3(0.0f, 0.0f, 1.0f));
     // dessinerCube();
+}
+
+void fillBuffers(std::vector<v> *sommets, std::vector<f> *faces) {
+    // remplir le tableau de shader_vertex avec les sommets, et rgb valant 1,1,1
 }
