@@ -27,27 +27,4 @@ using namespace std;
 void readObjFile(const char *filename, vector<vertex> &vertices,
                  vector<face> &faces);
 
-/**
- * @brief Fonction qui récupère le sommet d'une face à un indice donné
- *
- * @param index la valeur à récupérer entre 0 et 2
- * @param f la face qui contient les sommets
- * @return int l'indice du sommet
- */
-int getVertex(int index, face *face);
-
-/**
- * Fonction qui affiche un tableau de sommets
- *
- * @param vertices Tableau de sommets à afficher
- */
-void printV(vector<vertex> &vertices);
-
-/**
- * Fonction qui affiche un tableau de faces
- *
- * @param faces Tableau de faces à afficher
- */
-void printF(vector<face> &faces);
-
 #endif /* OBJ_HPP */

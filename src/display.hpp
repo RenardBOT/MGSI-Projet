@@ -36,7 +36,7 @@ extern glm::mat4 View;
 extern glm::mat4 Model;
 extern glm::mat4 MVP;
 
-extern std::vector<vertex> mesh_sommets;
+extern std::vector<vertex> mesh_vertices;
 extern std::vector<face> mesh_faces;
 
 extern GLuint vbo;
