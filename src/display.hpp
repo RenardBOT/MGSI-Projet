@@ -50,9 +50,9 @@ extern int anglex, angley, x, y, xold, yold;
 
 extern SDL_Surface *screen;
 
-int initDisplay(int argc, char **argv);
+int initDisplay(int argc, char **argv, const vector<vertex>&, const vector<face>&);
 void fillBuffers(std::vector<vertex> *sommetsIn, std::vector<face> *facesOut);
-void genererVBOVAO(void);
+void genererVBOVAO(const vector<vertex>&, const vector<face>&);
 void prepareProgammeShader(void);
 void affichage();
 void keyboard(SDL_Event event);
