@@ -9,8 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "glstructs.hpp"
-
+#include "gl_structs.hpp"
 using namespace std;
 
 // === Fonctions ===
@@ -25,7 +24,8 @@ using namespace std;
  * @param faces Vecteur de faces à remplir (voir la structure f dans obj.hpp)
  * @return void
  */
-void readObjFile(const char *filename, vector<v> &vertices, vector<f> &faces);
+void readObjFile(const char *filename, vector<vertex> &vertices,
+                 vector<face> &faces);
 
 /**
  * @brief Fonction qui récupère le sommet d'une face à un indice donné
@@ -34,20 +34,20 @@ void readObjFile(const char *filename, vector<v> &vertices, vector<f> &faces);
  * @param f la face qui contient les sommets
  * @return int l'indice du sommet
  */
-int getVertex(int index, f *face);
+int getVertex(int index, face *face);
 
 /**
  * Fonction qui affiche un tableau de sommets
  *
  * @param vertices Tableau de sommets à afficher
  */
-void printV(vector<v> &vertices);
+void printV(vector<vertex> &vertices);
 
 /**
  * Fonction qui affiche un tableau de faces
  *
  * @param faces Tableau de faces à afficher
  */
-void printF(vector<f> &faces);
+void printF(vector<face> &faces);
 
 #endif /* OBJ_HPP */

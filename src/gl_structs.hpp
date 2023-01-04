@@ -8,7 +8,7 @@
 /**
  * @brief Une structure représentant les coordonnées d'un point du format obj
  */
-struct v {
+struct vertex {
     // La coordonnée en x du point
     GLfloat x;
     // La coordonnée en y du point
@@ -20,7 +20,7 @@ struct v {
 /**
  * @brief Une structure représentant une face du format obj
  */
-struct f {
+struct face {
     // L'indice du premier sommet de la face
     GLint v1;
     // L'indice du deuxième sommet de la face

@@ -188,6 +188,6 @@ void rotate(int x, int y) {
     // dessinerCube();
 }
 
-void fillBuffers(std::vector<v> *sommets, std::vector<f> *faces) {
+void fillBuffers(std::vector<vertex> *sommets, std::vector<face> *faces) {
     // remplir le tableau de shader_vertex avec les sommets, et rgb valant 1,1,1
 }

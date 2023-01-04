@@ -9,15 +9,15 @@
 int main(int argc, char **argv) {
     // VerticesIn et facesIn sont des vecteurs de structures v et f définies
     // dans obj.hpp Ils contiendront les sommets et faces du fichier .obj
-    vector<v> verticesIn;
-    vector<f> facesIn;
+    vector<vertex> verticesIn;
+    vector<face> facesIn;
 
     // verticesOut, facesOut et halfedgesOut sont des vecteurs de pointeurs vers
     // les structures vertex, face et halfedge définies dans halfedge.hpp. Ils
     // contiendront les sommets, faces et demi-arêtes du maillage half-edge.
-    vector<vertex *> verticesOut;
-    vector<face *> facesOut;
-    vector<halfedge *> halfedgesOut;
+    vector<he_vertex *> verticesOut;
+    vector<he_face *> facesOut;
+    vector<he_halfedge *> halfedgesOut;
 
     // On lit le fichier .obj et on remplit les vecteurs verticesIn et facesIn
     readObjFile("meshes/hexagone.obj", verticesIn, facesIn);

@@ -10,6 +10,7 @@
 #include <iostream>
 #include <vector>
 
+#include "gl_structs.hpp"
 #include "halfedge.hpp"
 #include "obj.hpp"
 #include "shader.hpp"
@@ -59,7 +60,7 @@ extern int anglex, angley, x, y, xold, yold;
 extern SDL_Surface *screen;
 
 int initDisplay(int argc, char **argv);
-void fillBuffers(std::vector<v> *sommetsIn, std::vector<f> *facesOut);
+void fillBuffers(std::vector<vertex> *sommetsIn, std::vector<face> *facesOut);
 void genererVBOVAO(void);
 void prepareProgammeShader(void);
 void affichage();

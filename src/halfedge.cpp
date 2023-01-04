@@ -1,8 +1,9 @@
 #include "halfedge.hpp"
 
-void buildHalfEdge(vector<v> &verticesIn, vector<f> &facesIn,
-                   vector<vertex *> &verticesOut, vector<face *> &facesOut,
-                   vector<halfedge *> &halfedgesOut) {
+void buildHalfEdge(vector<vertex> &verticesIn, vector<face> &facesIn,
+                   vector<he_vertex *> &verticesOut,
+                   vector<he_face *> &facesOut,
+                   vector<he_halfedge *> &halfedgesOut) {
     // ALGORITHME DE REMPLISSAGE DE LA STRUCTURE HALF-EDGE
 
     // Index de départ pour chaque tableau
@@ -11,23 +12,24 @@ void buildHalfEdge(vector<v> &verticesIn, vector<f> &facesIn,
     int idHalfedge = 0;
 
     // Remplissage du tableau de sommets
-    for (v &vertexIn : verticesIn) {
-        vertex *v = new vertex{idVertex++, vertexIn.x, vertexIn.y, vertexIn.z};
+    for (vertex &vertexIn : verticesIn) {
+        he_vertex *v =
+            new he_vertex{idVertex++, vertexIn.x, vertexIn.y, vertexIn.z};
         verticesOut.push_back(v);
     }
 
     // Remplissage du tableau de faces
-    for (f &faceIn : facesIn) {
-        face *f = new face{idFace++, nullptr};
+    for (face &faceIn : facesIn) {
+        he_face *f = new he_face{idFace++, nullptr};
         facesOut.push_back(f);
     }
 
     // Parcours des faces pour remplir le tableau de demi-arêtes (manque les
     // twins)
     for (size_t faceIndex = 0; faceIndex < facesIn.size(); faceIndex++) {
-        halfedge *h0 = new halfedge;
-        halfedge *h1 = new halfedge;
-        halfedge *h2 = new halfedge;
+        he_halfedge *h0 = new he_halfedge;
+        he_halfedge *h1 = new he_halfedge;
+        he_halfedge *h2 = new he_halfedge;
 
         // Définition d'un id pour chaque demi-arête à des fins de débuggage
         h0->id = idHalfedge++;
@@ -67,8 +69,8 @@ void buildHalfEdge(vector<v> &verticesIn, vector<f> &facesIn,
     }
 
     // Il reste à associer un twin à chaque demi-arête
-    for (face *f : facesOut) {
-        halfedge *h = f->half_edge;
+    for (he_face *f : facesOut) {
+        he_halfedge *h = f->half_edge;
 
         if (h->twin !=
             nullptr)  // Si elle a déjà un twin, pas besoin de le chercher
@@ -76,7 +78,7 @@ void buildHalfEdge(vector<v> &verticesIn, vector<f> &facesIn,
 
         // Sinon on cherche un twin pour l'arête
         do {
-            for (halfedge *other_h : halfedgesOut) {
+            for (he_halfedge *other_h : halfedgesOut) {
                 if (other_h->origin == h->next->origin &&
                     other_h->next->origin == h->origin) {
                     h->twin = other_h;
@@ -89,27 +91,28 @@ void buildHalfEdge(vector<v> &verticesIn, vector<f> &facesIn,
     }
 }
 
-void printVertices(vector<vertex *> &vertices) {
+void printVertices(vector<he_vertex *> &vertices) {
     // Affichage des du sommet de la forme (id : x y z)
-    for (vector<vertex *>::iterator it = vertices.begin(); it != vertices.end();
-         ++it) {
+    for (vector<he_vertex *>::iterator it = vertices.begin();
+         it != vertices.end(); ++it) {
         cout << "V " << (*it)->id << " : " << (*it)->x << " " << (*it)->y << " "
              << (*it)->z << endl;
     }
 }
-void printFaces(vector<face *> &faces) {
+void printFaces(vector<he_face *> &faces) {
     // Affichage des faces de la forme (id : h0 h1 h2)
-    for (vector<face *>::iterator it = faces.begin(); it != faces.end(); ++it) {
+    for (vector<he_face *>::iterator it = faces.begin(); it != faces.end();
+         ++it) {
         cout << "F " << (*it)->id << " : " << (*it)->half_edge->id << endl;
     }
 }
-void printHalfedges(vector<halfedge *> &halfedges) {
+void printHalfedges(vector<he_halfedge *> &halfedges) {
     // Affichage des demi-arêtes de la forme (id : origin next prev twin
     // incident_face)
     cout << "Halfedge : origin next prev twin incident_face" << endl;
 
     int twinid;
-    for (vector<halfedge *>::iterator it = halfedges.begin();
+    for (vector<he_halfedge *>::iterator it = halfedges.begin();
          it != halfedges.end(); ++it) {
         // On récupère l'id seulement s'il n'est pas nullptr, sinon il vaut -1
         // (arête sur le bord)
@@ -123,6 +126,6 @@ void printHalfedges(vector<halfedge *> &halfedges) {
     }
 }
 
-int getVertexId(vertex *v) { return v->id; }
-int getFaceId(face *f) { return f->id; }
-int getHalfedgeId(halfedge *h) { return h->id; }
+int getVertexId(he_vertex *v) { return v->id; }
+int getFaceId(he_face *f) { return f->id; }
+int getHalfedgeId(he_halfedge *h) { return h->id; }

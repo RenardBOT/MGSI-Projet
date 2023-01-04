@@ -4,21 +4,22 @@
 #include <iostream>
 #include <vector>
 
+#include "gl_structs.hpp"
 #include "obj.hpp"
 
 using namespace std;
 
 // === Structures ===
 
-struct vertex;
-struct face;
-struct halfedge;
+struct he_vertex;
+struct he_face;
+struct he_halfedge;
 
 /**
  * @brief Une structure représentant les coordonnées d'un sommet du modèle
  * half-edge
  */
-struct vertex {
+struct he_vertex {
     int id;
     // La coordonnée en x du point
     float x;
@@ -31,27 +32,27 @@ struct vertex {
 /**
  * @brief Une structure représentant une face du modèle half-edge
  */
-struct face {
+struct he_face {
     // L'indice d'une demi-arête de la face
     int id;
-    halfedge *half_edge;
+    he_halfedge *half_edge;
 };
 
 /**
  * @brief Une structure représentant une demi-arête du modèle half-edge
  */
-struct halfedge {
+struct he_halfedge {
     int id;
     // Indice de l'origine du halfedge
-    vertex *origin;
+    he_vertex *origin;
     // Indice du halfedge suivant
-    halfedge *next;
+    he_halfedge *next;
     // Indice du halfedge précédent
-    halfedge *prev;
+    he_halfedge *prev;
     // Indice de la demi-arête opposée
-    halfedge *twin;
+    he_halfedge *twin;
     // Indice de la face dont la demi-arête fait partie
-    face *incident_face;
+    he_face *incident_face;
 };
 
 // === Fonctions ===
@@ -61,15 +62,16 @@ struct halfedge {
  * remplit les vecteurs de sommets, faces et demi-arêtes passés en paramètre
  *
  */
-void buildHalfEdge(vector<v> &verticesIn, vector<f> &facesIn,
-                   vector<vertex *> &verticesOut, vector<face *> &facesOut,
-                   vector<halfedge *> &halfedgesOut);
+void buildHalfEdge(vector<vertex> &verticesIn, vector<face> &facesIn,
+                   vector<he_vertex *> &verticesOut,
+                   vector<he_face *> &facesOut,
+                   vector<he_halfedge *> &halfedgesOut);
 
-int getVertexId(vertex *v);
-int getFaceId(face *f);
-int getHalfedgeId(halfedge *he);
-void printVertices(vector<vertex *> &vertices);
-void printFaces(vector<face *> &faces);
-void printHalfedges(vector<halfedge *> &halfedges);
+int getVertexId(he_vertex *v);
+int getFaceId(he_face *f);
+int getHalfedgeId(he_halfedge *he);
+void printVertices(vector<he_vertex *> &vertices);
+void printFaces(vector<he_face *> &faces);
+void printHalfedges(vector<he_halfedge *> &halfedges);
 
 #endif /* HALFEDGE_HPP */
