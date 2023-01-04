@@ -45,6 +45,7 @@ make remake
 
 ## Répertoires
 * bin : Contient l'executable
-* obj : Contient les fichiers objets et dépendances. Le contenu de ce dossier fait partie du gitignore.
+* meshes : contient les fichiers .obj et .mtl pour afficher des objets
+* obj : Contient les fichiers objets et dépendances (.o et .d) à la compilation. Le contenu de ce dossier fait partie du gitignore.
 * shaders : Contient les shaders vertex et fragment
 * src : Code source .cpp et headers .hpp
