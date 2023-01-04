@@ -161,6 +161,7 @@ void affichage(GLuint size_array) {
         glEnd(); */
 
     // A FAIRE 2 : dessiner le maillage
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     // on spécifie avec quel shader on veut afficher
     glUseProgram(IdProgram);
     // on active le VAO
