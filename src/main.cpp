@@ -20,22 +20,25 @@ int main(int argc, char **argv) {
     vector<he_halfedge *> halfedgesOut;
 
     // On lit le fichier .obj et on remplit les vecteurs verticesIn et facesIn
-    readObjFile("meshes/vache.obj", verticesIn, facesIn);
+    readObjFile("meshes/hexagone.obj", verticesIn, facesIn);
 
     // On remplit les 3 vecteurs du maillage half-edge à partir des vecteurs
     // verticesIn et facesIn
     buildHalfEdge(verticesIn, facesIn, verticesOut, facesOut, halfedgesOut);
 
     // On affiche pour débug
+
     printVertices(verticesIn);
+    /*
     cout << "*************" << endl;
     printFaces(facesIn);
     cout << "*************" << endl;
-    /* printVertices(verticesOut);
+    printVertices(verticesOut);
     cout << "*************" << endl;
     printFaces(facesOut);
     cout << "*************" << endl;
-    printHalfedges(halfedgesOut); */
+    printHalfedges(halfedgesOut);
+    */
 
     // exit(EXIT_SUCCESS);
 

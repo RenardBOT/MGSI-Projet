@@ -10,41 +10,79 @@ glm::mat4 MVP;
 GLuint vbo = 0;
 GLuint ibo = 0;
 GLuint vao = 0;
+GLuint vbo_path = 0;
+GLuint ibo_path = 0;
+GLuint vao_path = 0;
 GLuint IdProgram = 0;
+GLuint IdProgram_path = 0;
 GLuint VShader = 0;
 GLuint FShader = 0;
 char presse;
 int anglex, angley, x, y, xold, yold;
 
+// initialise un tableau de vertex qui représente un chemin de points
+vector<vertex> path = {
+
+    {0, 0, 0},
+    {0.1, 0.3, 0.2},
+    {0.2, -0.9, 0.1},
+    {-0.3, -0.8, 0.5},
+    {0.2, 0, 0},
+};
+
 SDL_Surface* screen;
 
-void genererVBOVAO(const vector<vertex>& verticesIn, const vector<face>& facesIn) {
-    // On attribue aux vao, vbo et ibo un identifiant
+void genererVBOVAO() {
+    // Generate and bind the VAO for the mesh
+    glGenVertexArrays(1, &vao);
+
+    // Generate and bind the VBO for the mesh vertices
     glGenBuffers(1, &vbo);
-    glGenBuffers(1, &vao);
-    glGenBuffers(1, &ibo);
 
-    // On lie et on indique avec quels buffers on va travailler
+    // Generate and bind the VAO for the lines
+    glGenVertexArrays(1, &vao_path);
+
+    // Generate and bind the VBO for the line vertices
+    glGenBuffers(1, &vbo_path);
+}
+
+void remplissageVBOVAOmesh(const vector<vertex>& verticesIn, const vector<face>& facesIn) {
+    // Génération du VAO
     glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 
-    // On envoie les données des sommets et des indices de faces au GPU
+    // Génération du VBO
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, verticesIn.size() * sizeof(vertex), &verticesIn[0], GL_STATIC_DRAW);
+
+    // Génération du IBO
+    glGenBuffers(1, &ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, facesIn.size() * sizeof(face), &facesIn[0], GL_STATIC_DRAW);
 
-    // On indique au GPU comment lire le tableau verticesIn
-    glEnableVertexAttribArray(0);
+    // On active l'attribut 0 (position)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), nullptr);
+    glEnableVertexAttribArray(0);
 
-    // Puis une fois que l'on n'utilise plus les VBO, VAO et IBO, on les désactive
-    // glBindVertexArray(0);
-    // glBindBuffer(GL_ARRAY_BUFFER, 0);
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    // On désactive le VAO
+    glBindVertexArray(0);
+}
+
+void remplissageVBOVAOpath() {
+    glBindVertexArray(vao_path);
+
+    // Génération du VBO
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_path);
+    glBufferData(GL_ARRAY_BUFFER, path.size() * sizeof(vertex), &path[0], GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), nullptr);
+    glEnableVertexAttribArray(0);
+
+    glBindVertexArray(0);
 }
 
 void prepareProgammeShader(void) {
-    IdProgram = LoadShaders("shaders/shader.vert", "shaders/shader.frag");
+    IdProgram = LoadShaders("shaders/shader_path.vert", "shaders/shader_path.frag", "shaders/shader_path.geom");
+    IdProgram_path = LoadShaders("shaders/shader_path.vert", "shaders/shader_path.frag", "shaders/shader_path.geom");
 }
 
 void initMatrices(void) {
@@ -110,7 +148,9 @@ int initDisplay(int argc, char** argv, const vector<vertex>& v, const vector<fac
 
     prepareProgammeShader();
     initMatrices();
-    genererVBOVAO(v, f);
+    genererVBOVAO();
+    remplissageVBOVAOmesh(v, f);
+    remplissageVBOVAOpath();
 
     // program main loop
     bool done = false;
@@ -162,19 +202,40 @@ void affichage(GLuint size_array) {
     /* effacement de l'image avec la couleur de fond */
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glUseProgram(IdProgram);
-    glBindVertexArray(vao);
-    glDrawElements(GL_TRIANGLES, size_array, GL_UNSIGNED_INT, 0);
+    glUseProgram(IdProgram_path);
+    glBindVertexArray(vao_path);
+    glLineWidth(5);
 
-    // Calcul du MVP
-    GLuint MatriceID = glGetUniformLocation(IdProgram, "MVP");
+    GLuint MatriceID = glGetUniformLocation(IdProgram_path, "MVP");
     // ordre inverse pour multiplication matrices
     glUniformMatrix4fv(MatriceID, 1, GL_FALSE, &MVP[0][0]);
 
+    glDrawArrays(GL_LINES, 0, path.size());
+
+    glBindVertexArray(0);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    glUseProgram(IdProgram);
+    glBindVertexArray(vao);
+    glDrawElements(GL_TRIANGLES, size_array, GL_UNSIGNED_INT, 0);
+    MatriceID = glGetUniformLocation(IdProgram, "MVP");
+    // ordre inverse pour multiplication matrices
+    glUniformMatrix4fv(MatriceID, 1, GL_FALSE, &MVP[0][0]);
     glBindVertexArray(0);
 
-    // On echange les buffers
+    /*
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glUseProgram(IdProgram);
+        glBindVertexArray(vao);
+
+        glDrawElements(GL_TRIANGLES, size_array, GL_UNSIGNED_INT, 0);
+
+        // Calcul du MVP
+        GLuint MatriceID = glGetUniformLocation(IdProgram, "MVP");
+        // ordre inverse pour multiplication matrices
+        glUniformMatrix4fv(MatriceID, 1, GL_FALSE, &MVP[0][0]);
+
+        glBindVertexArray(0); */
     SDL_GL_SwapBuffers();
 }
 
