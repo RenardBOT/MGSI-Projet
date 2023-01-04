@@ -1,3 +1,6 @@
+#ifndef GL_STRUCTS_HPP
+#define GL_STRUCTS_HPP
+
 #include <GL/gl.h>
 
 // === Structures ===
@@ -25,3 +28,5 @@ struct f {
     // L'indice du troisième sommet de la face
     GLint v3;
 };
+
+#endif /* GL_STRUCTS_HPP */
