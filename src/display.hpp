@@ -9,6 +9,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include <vector>
+using glm::mat4;
 
 #include "gl_structs.hpp"
 #include "halfedge.hpp"

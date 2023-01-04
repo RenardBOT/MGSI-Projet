@@ -47,7 +47,28 @@ void prepareProgammeShader(void) {
     IdProgram = LoadShaders("shaders/shader.vert", "shaders/shader.frag");
 }
 
-/* Prototype des fonctions */
+void initMatrices(void) {
+    GLfloat zoom = 2.0f;
+    // TRANSFORMATIONS
+    // Matrice de Projection : 45° Field of View, ratio 1, intervalle affichage : 0.1 unité <-> 100 unités
+    Projection = glm::perspective(45.0f, (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+
+    // Or, for an ortho camera :
+    // Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f); // In world coordinates
+
+    // Camera matrix
+    View = glm::lookAt(glm::vec3(5, 0, 0),  // Place de la Camera ( World Space)
+                       glm::vec3(0, 0, 0),  // pointe a l'origine
+                       glm::vec3(00, 1, 0)  // on regarde en haut
+    );
+    // Matrice de modelisarion : identité + transfos
+    Model = glm::mat4(1.0f);
+    Model = glm::translate(Model, glm::vec3(-.0f, -.0f, -.0f));
+    Model = glm::scale(Model, glm::vec3(1.0f * zoom, 1.0f * zoom, 1.0f * zoom));
+    // Our ModelViewProjection : multiplication des 3 matrices
+
+    MVP = Projection * View * Model;
+}
 
 //********************************************
 int initDisplay(int argc, char** argv, const vector<vertex>& v, const vector<face>& f) {
@@ -88,6 +109,7 @@ int initDisplay(int argc, char** argv, const vector<vertex>& v, const vector<fac
               << std::endl;
 
     prepareProgammeShader();
+    initMatrices();
     genererVBOVAO(v, f);
 
     // program main loop
@@ -139,36 +161,17 @@ int initDisplay(int argc, char** argv, const vector<vertex>& v, const vector<fac
 void affichage(GLuint size_array) {
     /* effacement de l'image avec la couleur de fond */
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    /*
-        // Repère (fait à l'ancienne
-        // axe x en rouge
-        glBegin(GL_LINES);
-        glColor3f(1.0, 0.0, 0.0);
-        glVertex3f(0, 0, 0.0);
-        glVertex3f(1, 0, 0.0);
-        glEnd();
-        // axe des y en vert
-        glBegin(GL_LINES);
-        glColor3f(0.0, 1.0, 0.0);
-        glVertex3f(0, 0, 0.0);
-        glVertex3f(0, 1, 0.0);
-        glEnd();
-        // axe des z en bleu
-        glBegin(GL_LINES);
-        glColor3f(0.0, 0.0, 1.0);
-        glVertex3f(0, 0, 0.0);
-        glVertex3f(0, 0, 1.0);
-        glEnd(); */
 
-    // A FAIRE 2 : dessiner le maillage
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    // on spécifie avec quel shader on veut afficher
     glUseProgram(IdProgram);
-    // on active le VAO
     glBindVertexArray(vao);
-    // on appelle la fonction dessin
     glDrawElements(GL_TRIANGLES, size_array, GL_UNSIGNED_INT, 0);
-    // on désactive le VAO
+
+    // Calcul du MVP
+    GLuint MatriceID = glGetUniformLocation(IdProgram, "MVP");
+    // ordre inverse pour multiplication matrices
+    glUniformMatrix4fv(MatriceID, 1, GL_FALSE, &MVP[0][0]);
+
     glBindVertexArray(0);
 
     // On echange les buffers
@@ -181,6 +184,27 @@ void keyboard(SDL_Event event) {
         case SDLK_ESCAPE:
             exit(0);
             break;
+        // appui sur arrow left
+        case SDLK_LEFT: {
+            glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), (float)(1.f / 360.f) * 20, glm::vec3(0, 1, 0));
+            MVP = MVP * rotation;
+            break;
+        }
+        case SDLK_RIGHT: {
+            glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), (float)(1.f / 360.f) * -20, glm::vec3(0, 1, 0));
+            MVP = MVP * rotation;
+            break;
+        }
+        case SDLK_UP: {
+            glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), (float)(1.f / 360.f) * 20, glm::vec3(1, 0, 0));
+            MVP = MVP * rotation;
+            break;
+        }
+        case SDLK_DOWN: {
+            glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), (float)(1.f / 360.f) * -20, glm::vec3(1, 0, 0));
+            MVP = MVP * rotation;
+            break;
+        }
 
         default:
             std::cout << "Touche non reconnue" << std::endl;
