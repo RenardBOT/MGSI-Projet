@@ -38,11 +38,9 @@ void buildHalfEdge(vector<vertex> &verticesIn, vector<face> &facesIn,
         h2->id = idHalfedge++;
 
         // L'origine de chaque demi-arête est son sommet d'origine.
-        h0->origin =
-            verticesOut[facesIn[faceIndex].v1 -
-                        1];  // -1 car les indices des sommets commencent à 1
-        h1->origin = verticesOut[facesIn[faceIndex].v2 - 1];
-        h2->origin = verticesOut[facesIn[faceIndex].v3 - 1];
+        h0->origin = verticesOut[facesIn[faceIndex].v1];
+        h1->origin = verticesOut[facesIn[faceIndex].v2];
+        h2->origin = verticesOut[facesIn[faceIndex].v3];
 
         // Définition des demi-arêtes suivantes et précédentes
         h0->next = h1;

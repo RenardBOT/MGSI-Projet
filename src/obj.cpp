@@ -11,6 +11,7 @@ void readObjFile(const char *filename, vector<vertex> &vertices,
     }
     // Lecture du fichier ligne par ligne
     string line;
+    float zoom = 0.05f;
     while (getline(file, line)) {
         istringstream iss(line);
         string word;
@@ -19,9 +20,9 @@ void readObjFile(const char *filename, vector<vertex> &vertices,
         if (word == "v") {
             vertex vertex;
             iss >> vertex.x >> vertex.y >> vertex.z;
-            vertex.x = 0.1f * vertex.x;
-            vertex.y = 0.1f * vertex.y;
-            vertex.z = 0.1f * vertex.z;
+            vertex.x = zoom * vertex.x;
+            vertex.y = zoom * vertex.y;
+            vertex.z = zoom * vertex.z;
             vertices.push_back(vertex);
         }
         // Si le premier mot est "f", ajout d'une nouvelle face au tableau
