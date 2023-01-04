@@ -25,16 +25,6 @@
 #define LIME 0.75f, 1.0f, 0.75f
 #define CUSTOM inputR, inputG, inputB
 
-struct shader_vertex {
-    // coordonnées x, y et z du sommet, et r g b de ses couleurs
-    GLfloat x;
-    GLfloat y;
-    GLfloat z;
-    GLfloat r;
-    GLfloat g;
-    GLfloat b;
-};
-
 // Taille de la fenêtre
 #define HEIGHT 1200
 #define WIDTH 1200
@@ -45,8 +35,8 @@ extern glm::mat4 View;
 extern glm::mat4 Model;
 extern glm::mat4 MVP;
 
-extern std::vector<shader_vertex> sommets;
-extern std::vector<GLuint> faces;
+extern std::vector<vertex> sommets;
+extern std::vector<face> faces;
 
 extern GLuint vbo;
 extern GLuint ibo;
