@@ -6,7 +6,7 @@
 // === Structures ===
 
 /**
- * @brief Une structure représentant les coordonnées d'un point du format obj
+ * @brief Une structure un sommet par ses trois coordonnées
  */
 struct vertex {
     // La coordonnée en x du point
@@ -18,7 +18,7 @@ struct vertex {
 };
 
 /**
- * @brief Une structure représentant une face du format obj
+ * @brief Une structure représentant une face par trois indices de sommets
  */
 struct face {
     // L'indice du premier sommet de la face
