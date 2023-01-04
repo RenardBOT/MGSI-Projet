@@ -57,7 +57,8 @@ int initDisplay(int argc, char **argv) {
 
     // info version oenGL / GLSL :
     //  AFAIRE 1 : récupérer les infos sur la cater version d'openGL/GLSL
-    std::cout << std::endl << "***** Info GPU *****" << std::endl;
+    std::cout << std::endl
+              << "***** Info GPU *****" << std::endl;
     std::cout << "Fabricant : " << glGetString(GL_VENDOR) << std::endl;
     std::cout << "Carte graphique: " << glGetString(GL_RENDERER) << std::endl;
     std::cout << "Version : " << glGetString(GL_VERSION) << std::endl;

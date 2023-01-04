@@ -48,7 +48,7 @@ int getVertex(int index, face *face) {
 
 void printV(vector<vertex> &vertices) {
     // Pour chaque sommet du vecteur on affiche les coordonnées du sommet
-    for (int i = 0; i < vertices.size(); i++) {
+    for (size_t i = 0; i < vertices.size(); i++) {
         cout << "v " << vertices[i].x << " " << vertices[i].y << " "
              << vertices[i].z << endl;
     }
@@ -56,7 +56,7 @@ void printV(vector<vertex> &vertices) {
 
 void printF(vector<face> &faces) {
     // Pour chaque face du vecteur on affiche les indices des sommets de la face
-    for (int i = 0; i < faces.size(); i++) {
+    for (size_t i = 0; i < faces.size(); i++) {
         cout << "f " << faces[i].v1 << " " << faces[i].v2 << " " << faces[i].v3
              << endl;
     }

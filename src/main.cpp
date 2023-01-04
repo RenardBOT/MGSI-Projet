@@ -36,4 +36,7 @@ int main(int argc, char **argv) {
     // exit(EXIT_SUCCESS);
 
     initDisplay(argc, argv);
+
+    // Libération de la mémoire
+    freeHalfEdge(verticesOut, facesOut, halfedgesOut);
 }

@@ -19,7 +19,8 @@ void buildHalfEdge(vector<vertex> &verticesIn, vector<face> &facesIn,
     }
 
     // Remplissage du tableau de faces
-    for (face &faceIn : facesIn) {
+    for (face faceIn : facesIn) {
+        (void)faceIn;  // Pour éviter le warning "unused variable"
         he_face *f = new he_face{idFace++, nullptr};
         facesOut.push_back(f);
     }
@@ -129,3 +130,15 @@ void printHalfedges(vector<he_halfedge *> &halfedges) {
 int getVertexId(he_vertex *v) { return v->id; }
 int getFaceId(he_face *f) { return f->id; }
 int getHalfedgeId(he_halfedge *h) { return h->id; }
+
+void freeHalfEdge(vector<he_vertex *> &vertices, vector<he_face *> &faces, vector<he_halfedge *> &halfedges) {
+    for (he_vertex *v : vertices) {
+        delete v;
+    }
+    for (he_face *f : faces) {
+        delete f;
+    }
+    for (he_halfedge *h : halfedges) {
+        delete h;
+    }
+}

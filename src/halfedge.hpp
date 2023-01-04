@@ -74,4 +74,7 @@ void printVertices(vector<he_vertex *> &vertices);
 void printFaces(vector<he_face *> &faces);
 void printHalfedges(vector<he_halfedge *> &halfedges);
 
+void freeHalfEdge(vector<he_vertex *> &vertices, vector<he_face *> &faces,
+                  vector<he_halfedge *> &halfedges);
+
 #endif /* HALFEDGE_HPP */

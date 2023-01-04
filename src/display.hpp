@@ -15,6 +15,7 @@
 #include "obj.hpp"
 #include "shader.hpp"
 
+// Quelques définitions de couleurs
 #define ROUGE 1.0f, 0.0f, 0.0f
 #define BLEU 0.0f, 0.0f, 1.0f
 #define VERT 0.0f, 1.0f, 0.0f
@@ -35,8 +36,8 @@ extern glm::mat4 View;
 extern glm::mat4 Model;
 extern glm::mat4 MVP;
 
-extern std::vector<vertex> sommets;
-extern std::vector<face> faces;
+extern std::vector<vertex> mesh_sommets;
+extern std::vector<face> mesh_faces;
 
 extern GLuint vbo;
 extern GLuint ibo;
