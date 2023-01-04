@@ -11,11 +11,11 @@ void readObjFile(const char *filename, vector<vertex> &vertices,
     }
     // Lecture du fichier ligne par ligne
     string line;
-    float zoom = 0.05f;
     while (getline(file, line)) {
         istringstream iss(line);
         string word;
         iss >> word;
+        float zoom = ZOOM_VAL;
         // Si le premier mot est "v", ajout d'un nouveau sommet au tableau
         if (word == "v") {
             vertex vertex;

@@ -12,6 +12,8 @@
 #include "gl_structs.hpp"
 using namespace std;
 
+#define ZOOM_VAL 0.2f
+
 // === Fonctions ===
 
 /**
