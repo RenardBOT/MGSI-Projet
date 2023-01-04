@@ -6,11 +6,11 @@ layout(location = 0) in vec3 position; // le location permet de dire de quel flu
 uniform vec3 inputColor;
 //out vec3 fragColor;
 
-uniform mat4 MVP;
+//uniform mat4 MVP;
 
 
 void main(){
-        gl_Position = MVP * vec4(position, 1.0);
+        gl_Position = vec4(position, 1.0);
         //fragColor = color;
 }
 

@@ -19,12 +19,18 @@ void readObjFile(const char *filename, vector<vertex> &vertices,
         if (word == "v") {
             vertex vertex;
             iss >> vertex.x >> vertex.y >> vertex.z;
+            vertex.x = 0.1f * vertex.x;
+            vertex.y = 0.1f * vertex.y;
+            vertex.z = 0.1f * vertex.z;
             vertices.push_back(vertex);
         }
         // Si le premier mot est "f", ajout d'une nouvelle face au tableau
         else if (word == "f") {
             face face;
             iss >> face.v1 >> face.v2 >> face.v3;
+            face.v1--;
+            face.v2--;
+            face.v3--;
             faces.push_back(face);
         }
     }

@@ -30,31 +30,11 @@
 #define HEIGHT 1200
 #define WIDTH 1200
 
-// Matrices GLM
-extern glm::mat4 Projection;
-extern glm::mat4 View;
-extern glm::mat4 Model;
-extern glm::mat4 MVP;
-
-extern std::vector<vertex> mesh_vertices;
-extern std::vector<face> mesh_faces;
-
-extern GLuint vbo;
-extern GLuint ibo;
-extern GLuint vao;
-extern GLuint IdProgram;
-extern GLuint VShader;
-extern GLuint FShader;
-extern char presse;
-extern int anglex, angley, x, y, xold, yold;
-
-extern SDL_Surface *screen;
-
-int initDisplay(int argc, char **argv, const vector<vertex>&, const vector<face>&);
+int initDisplay(int argc, char **argv, const vector<vertex> &, const vector<face> &);
 void fillBuffers(std::vector<vertex> *sommetsIn, std::vector<face> *facesOut);
-void genererVBOVAO(const vector<vertex>&, const vector<face>&);
+void genererVBOVAO(const vector<vertex> &, const vector<face> &);
 void prepareProgammeShader(void);
-void affichage();
+void affichage(GLuint size_array);
 void keyboard(SDL_Event event);
 void reshape(int x, int y);
 void mouse(int bouton, int etat, int x, int y);
