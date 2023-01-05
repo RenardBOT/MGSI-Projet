@@ -11,6 +11,12 @@ int main(int argc, char **argv) {
     // dans obj.hpp Ils contiendront les sommets et faces du fichier .obj
     vector<vertex> verticesIn;
     vector<face> facesIn;
+    // initialise un tableau de vertex qui représente un chemin de points
+    vector<vertex> path = {
+        {1.0, 4.0, 0.0},
+        {3.0, 4.0, 0.0},
+        {4.0, 2.0, 0.0},
+        {3.0, 0.0, 0.0}};
 
     // verticesOut, facesOut et halfedgesOut sont des vecteurs de pointeurs vers
     // les structures vertex, face et halfedge définies dans halfedge.hpp. Ils
@@ -42,7 +48,7 @@ int main(int argc, char **argv) {
 
     // exit(EXIT_SUCCESS);
 
-    initDisplay(argc, argv, verticesIn, facesIn);
+    initDisplay(argc, argv, verticesIn, facesIn, path);
 
     // Libération de la mémoire
     freeHalfEdge(verticesOut, facesOut, halfedgesOut);

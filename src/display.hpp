@@ -30,13 +30,13 @@
 #define HEIGHT 900
 #define WIDTH 1200
 
-int initDisplay(int argc, char **argv, const vector<vertex> &, const vector<face> &);
+int initDisplay(int argc, char **argv, const vector<vertex> &, const vector<face> &, const vector<vertex> &path);
 void fillBuffers(std::vector<vertex> *sommetsIn, std::vector<face> *facesOut);
 void genererVBOVAO();
 void remplissageVBOVAOmesh(const vector<vertex> &verticesIn, const vector<face> &facesIn);
-void remplissageVBOVAOpath();
+void remplissageVBOVAOpath(const vector<vertex> &path);
 void prepareProgammeShader(void);
-void affichage(GLuint size_array);
+void affichage(GLuint size_array, GLuint size_path);
 void keyboard(SDL_Event event);
 void reshape(int x, int y);
 void mouse(int bouton, int etat, int x, int y);
