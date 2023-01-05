@@ -1,120 +1,136 @@
 #include "display.hpp"
 
-// Matrices GLM
-glm::mat4 Projection;
-glm::mat4 View;
-glm::mat4 Model;
-glm::mat4 MVP;
+/* -------------------------------------------------------------------------- */
+/*                             Variables globales                             */
+/* -------------------------------------------------------------------------- */
 
-// initialise à 0 = pas d’indice
-GLuint vbo = 0;
-GLuint ibo = 0;
-GLuint vao = 0;
-GLuint vbo_path = 0;
-GLuint ibo_path = 0;
-GLuint vao_path = 0;
-GLuint IdProgram = 0;
-GLuint IdProgram_path = 0;
-GLuint VShader = 0;
-GLuint FShader = 0;
-char presse;
-int anglex, angley, x, y, xold, yold;
+/* ----------------------- Matrices de transformation ----------------------- */
 
-SDL_Surface* screen;
+glm::mat4 Projection;  // Matrice de projection
+glm::mat4 View;        // Matrice de vue
+glm::mat4 Model;       // Matrice de modèle
+glm::mat4 MVP;         // Matrice MVP qui est le produit des 3 matrices précédentes
+GLuint MVPid;          // Id de la variable uniforme MVP dans le shader
 
-void genererVBOVAO() {
-    // Generate and bind the VAO for the mesh
-    glGenVertexArrays(1, &vao);
+/* ---------------- Données du maillage et de la trajectoire ---------------- */
 
-    // Generate and bind the VBO for the mesh vertices
-    glGenBuffers(1, &vbo);
+std::vector<vertex> mesh_vertices;  // Liste des sommets du maillage
+std::vector<face> mesh_faces;       // Liste des indices des sommets des faces triangulaire du maillage
+std::vector<vertex> path_vertices;  // Liste des points de la trajectoire
 
-    // Generate and bind the VAO for the lines
-    glGenVertexArrays(1, &vao_path);
+/* --------------------------------- Shaders -------------------------------- */
 
-    // Generate and bind the VBO for the line vertices
-    glGenBuffers(1, &vbo_path);
+GLuint mesh_shader = 0;  // Shader pour le maillage
+GLuint path_shader = 0;  // Shader pour la trajectoire
+GLuint mesh_vao = 0;     // VAO pour le maillage
+GLuint path_vao = 0;     // VAO pour la trajectoire
+GLuint mesh_vbo = 0;     // VBO pour le maillage
+GLuint path_vbo = 0;     // VBO pour la trajectoire
+GLuint mesh_ibo = 0;     // IBO pour le maillage
+
+/* --------------------------- Affichage à l'écran -------------------------- */
+
+char presse;                           // Touche enfoncée
+int anglex, angley, x, y, xold, yold;  // Variables pour la rotation de la scène
+SDL_Surface* screen;                   // Surface pour l'affichage
+
+/* -------------------------------------------------------------------------- */
+/*                                  Méthodes                                  */
+/* -------------------------------------------------------------------------- */
+
+/* ------------- Initialisation des shaders, buffers et matrices ------------ */
+
+void genShaders(void) {
+    mesh_shader = LoadShaders("shaders/shader.vert", "shaders/shader.frag", nullptr);
+    path_shader = LoadShaders("shaders/shader_path.vert", "shaders/shader_path.frag", nullptr);
 }
 
-void remplissageVBOVAOmesh(const vector<vertex>& verticesIn, const vector<face>& facesIn) {
-    // Génération du VAO
-    glBindVertexArray(vao);
-
-    // Génération du VBO
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, verticesIn.size() * sizeof(vertex), &verticesIn[0], GL_STATIC_DRAW);
-
-    // Génération du IBO
-    glGenBuffers(1, &ibo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, facesIn.size() * sizeof(face), &facesIn[0], GL_STATIC_DRAW);
-
-    // On active l'attribut 0 (position)
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), nullptr);
-    glEnableVertexAttribArray(0);
-
-    // On désactive le VAO
-    glBindVertexArray(0);
-}
-
-void remplissageVBOVAOpath(const vector<vertex>& path) {
-    // print path that is an array of vertex
-    for (int i = 0; i < path.size(); i++) {
-        cout << "path[" << i << "] = " << path[i].x << " " << path[i].y << " " << path[i].z << endl;
-    }
-    // affichage du tableau path
-    glBindVertexArray(vao_path);
-
-    // Génération du VBO
-    glBindBuffer(GL_ARRAY_BUFFER, vbo_path);
-    glBufferData(GL_ARRAY_BUFFER, path.size() * sizeof(vertex), &path[0], GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), nullptr);
-    glEnableVertexAttribArray(0);
-
-    glBindVertexArray(0);
-}
-
-void prepareProgammeShader(void) {
-    IdProgram = LoadShaders("shaders/shader.vert", "shaders/shader.frag", nullptr);
-    IdProgram_path = LoadShaders("shaders/shader_path.vert", "shaders/shader_path.frag", nullptr);
-}
-
-void initMatrices(void) {
+void genMatrices(void) {
     GLfloat zoom = 0.5f;
     // TRANSFORMATIONS
     // Matrice de Projection : 45° Field of View, ratio 1, intervalle affichage : 0.1 unité <-> 100 unités
     Projection = glm::perspective(45.0f, (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
 
-    // Or, for an ortho camera :
-    // Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f); // In world coordinates
-
-    // Camera matrix
+    // Matrice de vue (camera)
     View = glm::lookAt(glm::vec3(0, 0, 5),  // Place de la Camera ( World Space)
                        glm::vec3(0, 0, 0),  // pointe a l'origine
                        glm::vec3(00, 1, 0)  // on regarde en haut
     );
-    // Matrice de modelisarion : identité + transfos
+    // Matrice de modelisation : identité + transfos
     Model = glm::mat4(1.0f);
     Model = glm::translate(Model, glm::vec3(-.0f, -.0f, -.0f));
     Model = glm::scale(Model, glm::vec3(1.0f * zoom, 1.0f * zoom, 1.0f * zoom));
-    // Our ModelViewProjection : multiplication des 3 matrices
 
+    // MVP est donc le produit des 3 matrices (l'ordre est important dans une multiplication de matrices!)
     MVP = Projection * View * Model;
 }
 
-//********************************************
-int initDisplay(int argc, char** argv, const vector<vertex>& v, const vector<face>& f, const vector<vertex>& path) {
-    // initialize SDL video
+void genBuffers(void) {
+    // Génération VAO, VBO et IBO pour le maillage
+    glGenVertexArrays(1, &mesh_vao);
+    glGenBuffers(1, &mesh_vbo);
+    glGenBuffers(1, &mesh_ibo);
+
+    // Génération VAO, VBO pour la trajectoire
+    glGenVertexArrays(1, &path_vao);
+    glGenBuffers(1, &path_vbo);
+}
+
+void fillMeshBuffers(void) {
+    // Bind du VAO
+    glBindVertexArray(mesh_vao);
+
+    // Bind et remplissage du VBO
+    glBindBuffer(GL_ARRAY_BUFFER, mesh_vbo);
+    glBufferData(GL_ARRAY_BUFFER, mesh_vertices.size() * sizeof(vertex), &mesh_vertices[0], GL_STATIC_DRAW);
+
+    // Bind et remplissage du IBO
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh_ibo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh_faces.size() * sizeof(face), &mesh_faces[0], GL_STATIC_DRAW);
+
+    // On active l'attribut 0 qui correspond à la position des sommets
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), nullptr);
+
+    // Unbind du VAO et du VBO. Pas besoin de débind le IBO puisqu'il est lié au VAO
+    glEnableVertexAttribArray(0);
+    glBindVertexArray(0);
+}
+
+void fillPathBuffers(void) {
+    // Bind du VAO
+    glBindVertexArray(path_vao);
+
+    // Bind et remplissage du VBO
+    glBindBuffer(GL_ARRAY_BUFFER, path_vbo);
+    glBufferData(GL_ARRAY_BUFFER, path_vertices.size() * sizeof(vertex), &path_vertices[0], GL_STATIC_DRAW);
+
+    // On active l'attribut 0 qui correspond à la position des sommets
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), nullptr);
+
+    // Unbind du VAO et du VBO
+    glEnableVertexAttribArray(0);
+    glBindVertexArray(0);
+}
+
+void bindExternalArrays(const vector<vertex>& mesh_vertices_in, const vector<face>& mesh_faces_in, const vector<vertex>& path_vertices_in) {
+    mesh_vertices = mesh_vertices_in;
+    mesh_faces = mesh_faces_in;
+    path_vertices = path_vertices_in;
+}
+
+/* ------------------- Affichage de l'interface graphique ------------------- */
+
+int initDisplay() {
+    // Initialisation de SDL
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("Unable to init SDL: %s\n", SDL_GetError());
         return 1;
     }
 
-    // make sure SDL cleans up before exit
+    // Fonction appelée à la fermeture du programme
     atexit(SDL_Quit);
 
-    // create a new window
+    // Création de la fenêtre
     screen = SDL_SetVideoMode(WIDTH, HEIGHT, 16, SDL_OPENGL | SDL_DOUBLEBUF);
     if (!screen) {
         printf("Unable to set screen  : %s\n", SDL_GetError());
@@ -123,15 +139,14 @@ int initDisplay(int argc, char** argv, const vector<vertex>& v, const vector<fac
 
     glEnable(GL_DEPTH_TEST);
 
-    // ATTENTION ne pas oublier l'initialisation de GLEW
+    // Initialisation de GLEW
     GLenum err = glewInit();
     if (GLEW_OK != err) {
         // ERREUR : initialisation de GLEW a échoué
         std::cerr << "Error: " << glewGetErrorString(err) << std::endl;
     }
 
-    // info version oenGL / GLSL :
-    //  AFAIRE 1 : récupérer les infos sur la cater version d'openGL/GLSL
+    // affichage des infos sur la carte graphique
     std::cout << std::endl
               << "***** Info GPU *****" << std::endl;
     std::cout << "Fabricant : " << glGetString(GL_VENDOR) << std::endl;
@@ -141,13 +156,14 @@ int initDisplay(int argc, char** argv, const vector<vertex>& v, const vector<fac
               << std::endl
               << std::endl;
 
-    prepareProgammeShader();
-    initMatrices();
-    genererVBOVAO();
-    remplissageVBOVAOmesh(v, f);
-    remplissageVBOVAOpath(path);
+    // Phase d'initialisation des shaders, des matrices et des buffers
+    genShaders();
+    genMatrices();
+    genBuffers();
+    fillMeshBuffers();
+    fillPathBuffers();
 
-    // program main loop
+    // Boucle principale de gestion des évènements
     bool done = false;
     while (!done) {
         // message processing loop
@@ -155,69 +171,52 @@ int initDisplay(int argc, char** argv, const vector<vertex>& v, const vector<fac
         while (SDL_PollEvent(&event)) {
             // check for messages
             switch (event.type) {
-                    // exit if the window is closed
+                // Sortie de la boucle principale si fermeture de la fenêtre
                 case SDL_QUIT:
                     done = true;
                     break;
 
-                    // check for keypresses
+                // Lecture du clavier à l'appui d'une touche
                 case SDL_KEYDOWN:
-                    if (event.key.keysym.sym == SDLK_ESCAPE)
-                        done = true;
-                    else
-                        keyboard(event);
+                    keyboard(event);
+                    break;
+            }
+        }
 
-                    break;
-                    // check for keypresses
-                case SDL_MOUSEBUTTONDOWN:
-                    mouse(event.button.button, SDL_MOUSEBUTTONDOWN,
-                          event.button.x, event.button.y);
-                    break;
-                case SDL_MOUSEBUTTONUP:
-                    mouse(event.button.button, SDL_MOUSEBUTTONUP,
-                          event.button.x, event.button.y);
-                    break;
-                case SDL_MOUSEMOTION:
-                    mousemotion(event.button.x, event.button.y);
-                    break;
-
-            }  // end switch
-        }      // end of message processing
-
-        // DRAWING STARTS HERE
-        affichage(f.size() * sizeof(face), path.size());
+        // Affichage de la scène à chaque itération
+        display();
     }  // end main loop
 
-    // all is well ;)
-    printf("Exited cleanly\n");
+    printf("Sortie de display\n");
     return 0;
 }
 
-void affichage(GLuint size_array, GLuint size_path) {
-    /* effacement de l'image avec la couleur de fond */
+void display() {
+    // Effacement de l'écran
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glUseProgram(IdProgram_path);
-    glBindVertexArray(vao_path);
-    glLineWidth(5);
-
-    GLuint MatriceID = glGetUniformLocation(IdProgram_path, "MVP");
-    // ordre inverse pour multiplication matrices
-    glUniformMatrix4fv(MatriceID, 1, GL_FALSE, &MVP[0][0]);
-
-    glDrawArrays(GL_LINE_STRIP, 0, size_path);
-
-    glBindVertexArray(0);
-    glLineWidth(2);
+    // Qu'il s'agisse de la trajectoire ou du maillage, on dessine des lignes
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    glUseProgram(IdProgram);
-    glBindVertexArray(vao);
-    glDrawElements(GL_TRIANGLES, size_array, GL_UNSIGNED_INT, 0);
-    MatriceID = glGetUniformLocation(IdProgram, "MVP");
-    // ordre inverse pour multiplication matrices
-    glUniformMatrix4fv(MatriceID, 1, GL_FALSE, &MVP[0][0]);
-    glBindVertexArray(0);
+    // Affichage de la trajectoire sur la scène
+    glLineWidth(5);                                        // Grosse épaisseur de trait
+    glUseProgram(path_shader);                             // Utilisation du shader de la trajectoire
+    glBindVertexArray(path_vao);                           // Bind du VAO de la trajectoire
+    MVPid = glGetUniformLocation(path_shader, "MVP");      // Bind de la matrice MVP
+    glUniformMatrix4fv(MVPid, 1, GL_FALSE, &MVP[0][0]);    // Envoi de la matrice MVP
+    glDrawArrays(GL_LINE_STRIP, 0, path_vertices.size());  // Dessin de la trajectoire
+    glBindVertexArray(0);                                  // Désactivation du VAO
+
+    // Affichage du maillage sur la scène
+    glLineWidth(2);                                                           // Épaisseur de trait normale
+    glUseProgram(mesh_shader);                                                // Utilisation du shader du maillage
+    glBindVertexArray(mesh_vao);                                              // Bind du VAO du maillage
+    MVPid = glGetUniformLocation(mesh_shader, "MVP");                         // Bind de la matrice MVP
+    glUniformMatrix4fv(MVPid, 1, GL_FALSE, &MVP[0][0]);                       // Envoi de la matrice MVP
+    glDrawElements(GL_TRIANGLES, mesh_faces.size() * 3, GL_UNSIGNED_INT, 0);  // Dessin du maillage
+    glBindVertexArray(0);                                                     // Désactivation du VAO
+
+    // Échange des buffers d'affichage
     SDL_GL_SwapBuffers();
 }
 
@@ -227,7 +226,7 @@ void keyboard(SDL_Event event) {
         case SDLK_ESCAPE:
             exit(0);
             break;
-        // appui sur arrow left
+        // Rotation de la scène
         case SDLK_LEFT: {
             glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), (float)(1.f / 360.f) * 20, glm::vec3(0, 1, 0));
             MVP = MVP * rotation;
@@ -239,12 +238,12 @@ void keyboard(SDL_Event event) {
             break;
         }
         case SDLK_UP: {
-            glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), (float)(1.f / 360.f) * 20, glm::vec3(1, 0, 0));
+            glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), (float)(1.f / 360.f) * 20, glm::vec3(0, 0, 1));
             MVP = MVP * rotation;
             break;
         }
         case SDLK_DOWN: {
-            glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), (float)(1.f / 360.f) * -20, glm::vec3(1, 0, 0));
+            glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), (float)(1.f / 360.f) * -20, glm::vec3(0, 0, 1));
             MVP = MVP * rotation;
             break;
         }
@@ -252,42 +251,4 @@ void keyboard(SDL_Event event) {
         default:
             std::cout << "Touche non reconnue" << std::endl;
     }
-}
-
-void reshape(int x, int y) {
-    std::cout << "Reshape";
-    if (x < y)
-        glViewport(0, (y - x) / 2, x, x);
-    else
-        glViewport((x - y) / 2, 0, y, y);
-}
-
-void mouse(int button, int state, int x, int y) {
-    /* si on appuie sur le bouton gauche */
-    if (button == SDL_BUTTON_LEFT && state == SDL_MOUSEBUTTONDOWN) {
-        presse = 1; /* le booleen presse passe a 1 (vrai) */
-        xold = x;   /* on sauvegarde la position de la souris */
-        yold = y;
-        std::cout << "Clic :\tX = " << xold << "\t||\tY = " << yold
-                  << std::endl;
-    }
-    /* si on relache le bouton gauche */
-    if (button == SDL_BUTTON_LEFT && state == SDL_MOUSEBUTTONUP) {
-        presse = 0; /* le booleen presse passe a 0 (faux) */
-    }
-}
-
-void mousemotion(int x, int y) {
-    if (presse) { /* si le bouton gauche est presse */
-    }
-}
-
-void rotate(int x, int y) {
-    View = glm::rotate(View, (float)x * 0.006f, glm::vec3(0.0f, 1.0f, 0.0f));
-    View = glm::rotate(View, (float)y * 0.006f, glm::vec3(0.0f, 0.0f, 1.0f));
-    // dessinerCube();
-}
-
-void fillBuffers(std::vector<vertex>* sommets, std::vector<face>* faces) {
-    // remplir le tableau de shader_vertex avec les sommets, et rgb valant 1,1,1
 }

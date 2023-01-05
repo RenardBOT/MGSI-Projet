@@ -15,33 +15,70 @@
 #include "obj.hpp"
 #include "shader.hpp"
 
-// Quelques définitions de couleurs
-#define ROUGE 1.0f, 0.0f, 0.0f
-#define BLEU 0.0f, 0.0f, 1.0f
-#define VERT 0.0f, 1.0f, 0.0f
-#define JAUNE 1.0f, 1.0f, 0.0f
-#define MAGENTA 1.0f, 0.0f, 1.0f
-#define CYAN 0.0f, 1.0f, 1.0f
-#define ORANGE 1.0f, 0.5f, 0.2f
-#define LIME 0.75f, 1.0f, 0.75f
-#define CUSTOM inputR, inputG, inputB
+/* -------------------------------------------------------------------------- */
+/*                         Constantes de préprocesseur                        */
+/* -------------------------------------------------------------------------- */
 
-// Taille de la fenêtre
+// Hauteur de la fenêtre
 #define HEIGHT 900
+// Largeur de la fenêtre
 #define WIDTH 1200
 
-int initDisplay(int argc, char **argv, const vector<vertex> &, const vector<face> &, const vector<vertex> &path);
-void fillBuffers(std::vector<vertex> *sommetsIn, std::vector<face> *facesOut);
-void genererVBOVAO();
-void remplissageVBOVAOmesh(const vector<vertex> &verticesIn, const vector<face> &facesIn);
-void remplissageVBOVAOpath(const vector<vertex> &path);
-void prepareProgammeShader(void);
-void affichage(GLuint size_array, GLuint size_path);
+/* -------------------------------------------------------------------------- */
+/*                                  Méthodes                                  */
+/* -------------------------------------------------------------------------- */
+
+/* ------------- Initialisation des shaders, buffers et matrices ------------ */
+
+/**
+ * @brief Association d'un id à chaque shader et qui les compile
+ */
+void genShaders(void);
+
+/**
+ * @brief Génération des matrices MVP (Model, View, Projection) pour le rendu de la scène
+ */
+void genMatrices(void);
+
+/**
+ * @brief Génération des VAO, VBO et IBO servant à afficher le maillage et la trajectoire
+ */
+void genBuffers(void);
+
+/**
+ * @brief Remplissage des VAO, VBO et IBO avec les données du maillage
+ */
+void fillMeshBuffers(void);
+
+/**
+ * @brief Remplissage des VAO, VBO et IBO avec les données de la trajectoire
+ */
+void fillPathBuffers(void);
+
+/**
+ * @brief Fonction qui remplit VAO, VBO et IBO avec les données du maillage et de la trajectoire
+ * @param mesh_vertices Tableau de coordonnées des sommets du maillage (cf structure vertex dans gl_structs.hpp)
+ * @param mesh_faces Tableau d'indices des sommets des faces triangulaires du maillage (cf structure face dans gl_structs.hpp)
+ * @param path_vertices Tableau de coordonnées des points de la trajectoire (cf structure vertex dans gl_structs.hpp)
+ */
+void bindExternalArrays(const vector<vertex> &mesh_vertices, const vector<face> &mesh_faces, const vector<vertex> &path_vertices);
+
+/* ------------------- Affichage de l'interface graphique ------------------- */
+
+/**
+ * @brief Initialisation de l'interface graphique et lecture de la boucle principale.
+ */
+int initDisplay(void);
+
+/**
+ * @brief Affichage la scène à l'écran à chaque itération de la boucle principale.
+ */
+void display(void);
+
+/**
+ * @brief Fonction qui gère les évènements clavier
+ * @param event Évènement clavier
+ */
 void keyboard(SDL_Event event);
-void reshape(int x, int y);
-void mouse(int bouton, int etat, int x, int y);
-void mousemotion(int x, int y);
-void rotate(int x, int y);
-//********************************************
 
 #endif /* DISPLAY_HPP */
