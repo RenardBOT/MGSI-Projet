@@ -52,3 +52,8 @@ void construire(vector<he_halfedge *>, int origine, int flag);
  * Renvoie l'id du sommet à analyser, -1 si il n'en existe pas.
 */
 int selection();
+
+/**
+ * Fonction affichant le tableau dijSommet
+*/
+void afficheDijSommet();

@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
     vector<he_halfedge *> halfedgesOut;
 
     // On lit le fichier .obj et on remplit les vecteurs verticesIn et facesIn
-    readObjFile("meshes/vache.obj", verticesIn, facesIn);
+    readObjFile("meshes/ours.obj", verticesIn, facesIn);
 
     // On remplit les 3 vecteurs du maillage half-edge à partir des vecteurs
     // verticesIn et facesIn
@@ -47,10 +47,10 @@ int main(int argc, char **argv) {
     printHalfedges(halfedgesOut);
     */
 
-    buildDijkstra(halfedgesOut, verticesOut,1,196,0);
+    buildDijkstra(halfedgesOut, verticesOut,1,60,0);
 
     bindExternalArrays(verticesIn, facesIn, path);
-    initDisplay();
+    //initDisplay();
 
     // Libération de la mémoire
     freeHalfEdge(verticesOut, facesOut, halfedgesOut);

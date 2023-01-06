@@ -9,6 +9,7 @@ vector<halfedge_ponderee *> tabPond;
 void construire(vector<he_halfedge *> he, vector<he_vertex *> ve, int origine, int flag){
     //Pour chaque sommet, il faut une case dans le tableau
     std::cout<<"Nombre de sommet : "<<ve.size()<<endl;
+    std::cout<<"Nombre de half-edges : "<<he.size()<<endl;
     for(long unsigned int i=0; i<ve.size(); i++){
         //Chaque sommet est initialisé avec un poids irréaliste afin de passer les tests de Dijkstra
         dijSommet *d = new dijSommet{ve[i]->id,0,1000000000,false};
@@ -50,6 +51,13 @@ int selection(){
     //La fonction renvoie -1 si tout les sommets atteignable sont marqué
     //La fonction renvoie -1 si il ne reste plus que des sommets non connexe aussi 
     return idSommet;
+}
+
+void afficheDijSommet(){
+    std::cout<<"Id\t|Origine\t|Poids\t|marque"<<endl;
+    for(long unsigned int i=0; i<dijSommets.size(); i++){
+        std::cout<<dijSommets[i]->id<<"\t|"<<dijSommets[i]->origin<<"\t\t|"<<dijSommets[i]->poids<<"\t|"<<dijSommets[i]->marque<<endl;
+    }
 }
 
 vector<int> buildDijkstra(vector<he_halfedge *> he, vector<he_vertex *> ve, int origine, int destination, int flag){
@@ -95,6 +103,7 @@ vector<int> buildDijkstra(vector<he_halfedge *> he, vector<he_vertex *> ve, int 
     //Le chemin part de la destination
     //on enregistre d'où vient le chemin qui mène jusqu'à la destination
     int sommet = destination;
+    afficheDijSommet();
     std::cout<<"Chemin : ";
     while(sommet>0){
         chemin.push_back(sommet);
