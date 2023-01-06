@@ -7,6 +7,8 @@
 #include "gl_structs.hpp"
 #include "obj.hpp"
 
+#include <GL/gl.h>
+
 using namespace std;
 
 // === Structures ===

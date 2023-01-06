@@ -1,13 +1,13 @@
 #ifndef GL_STRUCTS_HPP
 #define GL_STRUCTS_HPP
 
-#include <GL/gl.h>
-
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
+
+#include <GL/gl.h>
 
 using namespace std;
 
