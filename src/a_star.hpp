@@ -1,14 +1,6 @@
-#ifndef A_STAR_HPP
-#define A_STAR_HPP
-
-#include <algorithm>
-#include <queue>
-#include <vector>
+#ifndef C11828E8_AC8F_4C58_BEAB_CAF1B21A9251
+#define C11828E8_AC8F_4C58_BEAB_CAF1B21A9251
 
 #include "halfedge.hpp"
 
-/* -------------------------------------------------------------------------- */
-/*                                  Méthodes                                  */
-/* -------------------------------------------------------------------------- */
-
-#endif /* A_STAR_HPP */
+#endif /* C11828E8_AC8F_4C58_BEAB_CAF1B21A9251 */

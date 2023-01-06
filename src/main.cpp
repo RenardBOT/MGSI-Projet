@@ -1,12 +1,14 @@
+#include <GL/glew.h>
+
 #include <cstdlib>
 #include <iostream>
 #include <vector>
 
 #include "a_star.hpp"
+#include "dijkstra.hpp"
 #include "display.hpp"
 #include "halfedge.hpp"
 #include "obj.hpp"
-#include "dijkstra.hpp"
 
 int main(int argc, char **argv) {
     // VerticesIn et facesIn sont des vecteurs de structures vertex et fface définies
@@ -48,7 +50,7 @@ int main(int argc, char **argv) {
     printHalfedges(halfedgesOut);
     */
 
-    buildDijkstra(halfedgesOut, verticesOut,1,196,0);
+    buildDijkstra(halfedgesOut, verticesOut, 1, 196, 0);
 
     bindExternalArrays(verticesIn, facesIn, path);
     initDisplay();
