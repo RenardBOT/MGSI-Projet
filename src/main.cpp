@@ -5,6 +5,7 @@
 #include "display.hpp"
 #include "halfedge.hpp"
 #include "obj.hpp"
+#include "dijkstra.hpp"
 
 int main(int argc, char **argv) {
     // VerticesIn et facesIn sont des vecteurs de structures vertex et fface définies
@@ -45,6 +46,8 @@ int main(int argc, char **argv) {
     cout << "*************" << endl;
     printHalfedges(halfedgesOut);
     */
+
+    buildDijkstra(halfedgesOut, verticesOut,1,196,0);
 
     bindExternalArrays(verticesIn, facesIn, path);
     initDisplay();
