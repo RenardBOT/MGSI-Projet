@@ -1,8 +1,6 @@
 #ifndef OBJ_HPP
 #define OBJ_HPP
 
-#include <GL/gl.h>
-
 #include <fstream>
 #include <iostream>
 #include <sstream>

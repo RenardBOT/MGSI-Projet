@@ -4,9 +4,9 @@
 #include <iostream>
 #include <vector>
 
+#include "display.hpp"
 #include "a_star.hpp"
 #include "dijkstra.hpp"
-#include "display.hpp"
 #include "halfedge.hpp"
 #include "obj.hpp"
 
