@@ -5,6 +5,7 @@
 #include "display.hpp"
 #include "halfedge.hpp"
 #include "obj.hpp"
+#include "dijkstra.hpp"
 
 int main(int argc, char **argv) {
     // VerticesIn et facesIn sont des vecteurs de structures vertex et fface définies
@@ -33,12 +34,18 @@ int main(int argc, char **argv) {
     // verticesIn et facesIn
     buildHalfEdge(verticesIn, facesIn, verticesOut, facesOut, halfedgesOut);
 
+<<<<<<< HEAD
+    
+
+    // On affiche pour débug
+=======
     // Section d'affichage pour debug
     /*
     printVertices(verticesIn);
     cout << "*************" << endl;
     printFaces(facesIn);
     cout << "*************" << endl;
+>>>>>>> 5fd9c41c2af70ead0075f85ab306cc618ae45193
     printVertices(verticesOut);
     cout << "*************" << endl;
     printFaces(facesOut);
@@ -49,9 +56,18 @@ int main(int argc, char **argv) {
     bindExternalArrays(verticesIn, facesIn, path);
     initDisplay();
 
+<<<<<<< HEAD
+    buildDijkstra(halfedgesOut, verticesOut,1,5,1);
+
+    // exit(EXIT_SUCCESS);
+
+    initDisplay(argc, argv);
+    
+=======
     // Libération de la mémoire
     freeHalfEdge(verticesOut, facesOut, halfedgesOut);
 
     // Sortie du programme
     return 0;
+>>>>>>> 5fd9c41c2af70ead0075f85ab306cc618ae45193
 }
