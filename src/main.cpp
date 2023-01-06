@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 
+#include "a_star.hpp"
 #include "display.hpp"
 #include "halfedge.hpp"
 #include "obj.hpp"
