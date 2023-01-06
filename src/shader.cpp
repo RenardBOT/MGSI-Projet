@@ -3,6 +3,8 @@
         Il permet de charger les shaders.
         Il n'a pas été modifié du tout.
 */
+// include glcreateshader
+#include <GL/glew.h>
 
 #include <stdio.h>
 
