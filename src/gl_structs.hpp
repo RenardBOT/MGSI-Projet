@@ -1,8 +1,6 @@
 #ifndef GL_STRUCTS_HPP
 #define GL_STRUCTS_HPP
 
-#include <GL/gl.h>
-
 #include <fstream>
 #include <iostream>
 #include <sstream>

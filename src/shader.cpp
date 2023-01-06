@@ -13,8 +13,6 @@
 #include <vector>
 
 using namespace std;
-
-#include <GL/glew.h>
 #include <stdlib.h>
 #include <string.h>
 
