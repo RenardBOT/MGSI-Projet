@@ -17,12 +17,7 @@ int main(int argc, char **argv) {
     vector<face> facesIn;
 
     // initialise un tableau de vertex qui représente un chemin de points. La trajectoire à afficher sur le maillage.
-    vector<vertex> path = {
-        {1.0, 4.0, 0.0},
-        {3.0, 4.0, 0.0},
-        {4.0, 2.0, 0.0},
-        {3.0, 0.0, 0.0}};
-
+    vector<vertex> path;
     // verticesOut, facesOut et halfedgesOut sont des vecteurs de pointeurs vers
     // les structures vertex, face et halfedge définies dans halfedge.hpp. Ils
     // contiendront les sommets, faces et demi-arêtes du maillage half-edge.
@@ -50,7 +45,12 @@ int main(int argc, char **argv) {
     printHalfedges(halfedgesOut);
     */
 
-    buildDijkstra(halfedgesOut, verticesOut, 1, 196, 0);
+    vector<int> sommets_path = buildDijkstra(halfedgesOut, verticesOut, 1, 196, 1);
+
+    // print sommets_path
+    for (int i = 0; i < sommets_path.size(); i++) {
+        path.push_back(verticesIn[sommets_path[i] - 1]);
+    }
 
     bindExternalArrays(verticesIn, facesIn, path);
     initDisplay();

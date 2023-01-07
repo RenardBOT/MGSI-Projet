@@ -46,7 +46,7 @@ void genShaders(void) {
 }
 
 void genMatrices(void) {
-    GLfloat zoom = 0.5f;
+    GLfloat zoom = 0.1f;
     // TRANSFORMATIONS
     // Matrice de Projection : 45° Field of View, ratio 1, intervalle affichage : 0.1 unité <-> 100 unités
     Projection = glm::perspective(45.0f, (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
@@ -199,20 +199,37 @@ void display() {
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     // Affichage de la trajectoire sur la scène
-    glLineWidth(5);                                        // Grosse épaisseur de trait
-    glUseProgram(path_shader);                             // Utilisation du shader de la trajectoire
-    glBindVertexArray(path_vao);                           // Bind du VAO de la trajectoire
-    MVPid = glGetUniformLocation(path_shader, "MVP");      // Bind de la matrice MVP
-    glUniformMatrix4fv(MVPid, 1, GL_FALSE, &MVP[0][0]);    // Envoi de la matrice MVP
-    glDrawArrays(GL_LINE_STRIP, 0, path_vertices.size());  // Dessin de la trajectoire
-    glBindVertexArray(0);                                  // Désactivation du VAO
+    glLineWidth(8);                                                          // Grosse épaisseur de trait
+    glUseProgram(mesh_shader);                                               // Utilisation du shader de la trajectoire
+    glBindVertexArray(path_vao);                                             // Bind du VAO de la trajectoire
+    MVPid = glGetUniformLocation(path_shader, "MVP");                        // Bind de la matrice MVP
+    glUniformMatrix4fv(MVPid, 1, GL_FALSE, &MVP[0][0]);                      // Envoi de la matrice MVP
+    GLint color_uniform3 = glGetUniformLocation(mesh_shader, "inputColor");  // Bind de la couleur
+    glUniform4f(color_uniform3, 1.f, 1.f, 1.f, 1.f);                         // blanc
+    glDrawArrays(GL_LINE_STRIP, 0, path_vertices.size());                    // Dessin de la trajectoire
+    glBindVertexArray(0);                                                    // Désactivation du VAO
 
     // Affichage du maillage sur la scène
-    glLineWidth(2);                                                           // Épaisseur de trait normale
-    glUseProgram(mesh_shader);                                                // Utilisation du shader du maillage
+    glLineWidth(2);  // Épaisseur de trait normale
+    // glUseProgram(mesh_shader);                                                // Utilisation du shader du maillage
     glBindVertexArray(mesh_vao);                                              // Bind du VAO du maillage
     MVPid = glGetUniformLocation(mesh_shader, "MVP");                         // Bind de la matrice MVP
     glUniformMatrix4fv(MVPid, 1, GL_FALSE, &MVP[0][0]);                       // Envoi de la matrice MVP
+    GLint color_uniform = glGetUniformLocation(mesh_shader, "inputColor");    // Bind de la couleur
+    glUniform4f(color_uniform, 0.1f, 0.9f, 0.7f, 1.0f);                       // blanc
+    glDrawElements(GL_TRIANGLES, mesh_faces.size() * 3, GL_UNSIGNED_INT, 0);  // Dessin du maillage
+    glBindVertexArray(0);
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    // Affichage du maillage sur la scène
+    glLineWidth(1);  // Épaisseur de trait normale
+    // glUseProgram(mesh_shader);                                                // Utilisation du shader du maillage
+    glBindVertexArray(mesh_vao);                                              // Bind du VAO du maillage
+    MVPid = glGetUniformLocation(mesh_shader, "MVP");                         // Bind de la matrice MVP
+    glUniformMatrix4fv(MVPid, 1, GL_FALSE, &MVP[0][0]);                       // Envoi de la matrice MVP
+    GLint color_uniform2 = glGetUniformLocation(mesh_shader, "inputColor");   // Bind de la couleur
+    glUniform4f(color_uniform2, 0.9f, 0.7f, 0.0f, 0.1f);                      // blanc
     glDrawElements(GL_TRIANGLES, mesh_faces.size() * 3, GL_UNSIGNED_INT, 0);  // Dessin du maillage
     glBindVertexArray(0);                                                     // Désactivation du VAO
 

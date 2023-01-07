@@ -1,13 +1,13 @@
 #ifndef HALFEDGE_HPP
 #define HALFEDGE_HPP
 
+#include <GL/glew.h>
+
 #include <iostream>
 #include <vector>
 
 #include "gl_structs.hpp"
 #include "obj.hpp"
-
-#include <GL/gl.h>
 
 using namespace std;
 
