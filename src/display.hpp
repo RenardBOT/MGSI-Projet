@@ -54,14 +54,20 @@ void fillMeshBuffers(void);
  * @brief Remplissage des VAO, VBO et IBO avec les données de la trajectoire
  */
 void fillPathBuffers(void);
+/**
+ * @brief Remplissage des VAO, VBO et IBO avec les données du maillage de la sphère
+ */
+void fillMeshSphereBuffers(void);
 
 /**
  * @brief Fonction qui remplit VAO, VBO et IBO avec les données du maillage et de la trajectoire
  * @param mesh_vertices Tableau de coordonnées des sommets du maillage (cf structure vertex dans gl_structs.hpp)
  * @param mesh_faces Tableau d'indices des sommets des faces triangulaires du maillage (cf structure face dans gl_structs.hpp)
  * @param path_vertices Tableau de coordonnées des points de la trajectoire (cf structure vertex dans gl_structs.hpp)
+ * @param mesh_vertices Tableau de coordonnées des sommets du maillage de la sphère (cf structure vertex dans gl_structs.hpp)
+ * @param mesh_faces Tableau d'indices des sommets des faces triangulaires du maillage de la sphère (cf structure face dans gl_structs.hpp)
  */
-void bindExternalArrays(const vector<vertex> &mesh_vertices, const vector<face> &mesh_faces, const vector<vertex> &path_vertices);
+void bindExternalArrays(const vector<vertex> &mesh_vertices, const vector<face> &mesh_faces, const vector<vertex> &path_vertices, const vector<vertex> &sphere_vertices_in, const vector<face> &sphere_faces_in);
 
 /* ------------------- Affichage de l'interface graphique ------------------- */
 

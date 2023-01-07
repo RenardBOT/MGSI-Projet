@@ -14,19 +14,25 @@ GLuint MVPid;          // Id de la variable uniforme MVP dans le shader
 
 /* ---------------- Données du maillage et de la trajectoire ---------------- */
 
-std::vector<vertex> mesh_vertices;  // Liste des sommets du maillage
-std::vector<face> mesh_faces;       // Liste des indices des sommets des faces triangulaire du maillage
-std::vector<vertex> path_vertices;  // Liste des points de la trajectoire
+std::vector<vertex> mesh_vertices;    // Liste des sommets du maillage
+std::vector<face> mesh_faces;         // Liste des indices des sommets des faces triangulaire du maillage
+std::vector<vertex> sphere_vertices;  // Liste des sommets du maillage de la sphère
+std::vector<face> sphere_faces;       // Liste des indices des sommets des faces triangulaire du maillage de la sphère
+std::vector<vertex> path_vertices;    // Liste des points de la trajectoire
 
 /* --------------------------------- Shaders -------------------------------- */
 
 GLuint mesh_shader = 0;  // Shader pour le maillage
 GLuint path_shader = 0;  // Shader pour la trajectoire
-GLuint mesh_vao = 0;     // VAO pour le maillage
-GLuint path_vao = 0;     // VAO pour la trajectoire
-GLuint mesh_vbo = 0;     // VBO pour le maillage
-GLuint path_vbo = 0;     // VBO pour la trajectoire
-GLuint mesh_ibo = 0;     // IBO pour le maillage
+GLuint sphere_shader = 0;
+GLuint mesh_vao = 0;  // VAO pour le maillage
+GLuint path_vao = 0;  // VAO pour la trajectoire
+GLuint sphere_vao = 0;
+GLuint mesh_vbo = 0;  // VBO pour le maillage
+GLuint path_vbo = 0;  // VBO pour la trajectoire
+GLuint sphere_vbo = 0;
+GLuint mesh_ibo = 0;  // IBO pour le maillage
+GLuint sphere_ibo = 0;
 
 /* --------------------------- Affichage à l'écran -------------------------- */
 
@@ -42,7 +48,8 @@ SDL_Surface* screen;                   // Surface pour l'affichage
 
 void genShaders(void) {
     mesh_shader = LoadShaders("shaders/shader.vert", "shaders/shader.frag", nullptr);
-    path_shader = LoadShaders("shaders/shader_path.vert", "shaders/shader_path.frag", nullptr);
+    path_shader = LoadShaders("shaders/shader.vert", "shaders/shader.frag", nullptr);
+    sphere_shader = LoadShaders("shaders/shader.vert", "shaders/shader.frag", nullptr);
 }
 
 void genMatrices(void) {
@@ -74,6 +81,11 @@ void genBuffers(void) {
     // Génération VAO, VBO pour la trajectoire
     glGenVertexArrays(1, &path_vao);
     glGenBuffers(1, &path_vbo);
+
+    // Génération VAO, VBO et IBO pour le maillage de la sphere
+    glGenVertexArrays(1, &sphere_vao);
+    glGenBuffers(1, &sphere_vbo);
+    glGenBuffers(1, &sphere_ibo);
 }
 
 void fillMeshBuffers(void) {
@@ -112,10 +124,32 @@ void fillPathBuffers(void) {
     glBindVertexArray(0);
 }
 
-void bindExternalArrays(const vector<vertex>& mesh_vertices_in, const vector<face>& mesh_faces_in, const vector<vertex>& path_vertices_in) {
+void fillMeshSphereBuffers(void) {
+    // Bind du VAO
+    glBindVertexArray(sphere_vao);
+
+    // Bind et remplissage du VBO
+    glBindBuffer(GL_ARRAY_BUFFER, sphere_vbo);
+    glBufferData(GL_ARRAY_BUFFER, sphere_vertices.size() * sizeof(vertex), &sphere_vertices[0], GL_STATIC_DRAW);
+
+    // Bind et remplissage du IBO
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphere_ibo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sphere_faces.size() * sizeof(face), &sphere_faces[0], GL_STATIC_DRAW);
+
+    // On active l'attribut 0 qui correspond à la position des sommets
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), nullptr);
+
+    // Unbind du VAO et du VBO. Pas besoin de débind le IBO puisqu'il est lié au VAO
+    glEnableVertexAttribArray(0);
+    glBindVertexArray(0);
+}
+
+void bindExternalArrays(const vector<vertex>& mesh_vertices_in, const vector<face>& mesh_faces_in, const vector<vertex>& path_vertices_in, const vector<vertex>& sphere_vertices_in, const vector<face>& sphere_faces_in) {
     mesh_vertices = mesh_vertices_in;
     mesh_faces = mesh_faces_in;
     path_vertices = path_vertices_in;
+    sphere_vertices = sphere_vertices_in;
+    sphere_faces = sphere_faces_in;
 }
 
 /* ------------------- Affichage de l'interface graphique ------------------- */
@@ -198,40 +232,49 @@ void display() {
     // Qu'il s'agisse de la trajectoire ou du maillage, on dessine des lignes
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+    GLint color_uniform;  // Uniform pour la couleur
+
     // Affichage de la trajectoire sur la scène
-    glLineWidth(8);                                                          // Grosse épaisseur de trait
-    glUseProgram(mesh_shader);                                               // Utilisation du shader de la trajectoire
-    glBindVertexArray(path_vao);                                             // Bind du VAO de la trajectoire
-    MVPid = glGetUniformLocation(path_shader, "MVP");                        // Bind de la matrice MVP
-    glUniformMatrix4fv(MVPid, 1, GL_FALSE, &MVP[0][0]);                      // Envoi de la matrice MVP
-    GLint color_uniform3 = glGetUniformLocation(mesh_shader, "inputColor");  // Bind de la couleur
-    glUniform4f(color_uniform3, 1.f, 1.f, 1.f, 1.f);                         // blanc
-    glDrawArrays(GL_LINE_STRIP, 0, path_vertices.size());                    // Dessin de la trajectoire
-    glBindVertexArray(0);                                                    // Désactivation du VAO
+    glLineWidth(8);                                                   // Grosse épaisseur de trait
+    glUseProgram(mesh_shader);                                        // Utilisation du shader de la trajectoire
+    glBindVertexArray(path_vao);                                      // Bind du VAO de la trajectoire
+    MVPid = glGetUniformLocation(mesh_shader, "MVP");                 // Bind de la matrice MVP
+    glUniformMatrix4fv(MVPid, 1, GL_FALSE, &MVP[0][0]);               // Envoi de la matrice MVP
+    color_uniform = glGetUniformLocation(mesh_shader, "inputColor");  // Bind de la couleur
+    glUniform4f(color_uniform, 1.f, 1.f, 1.f, 1.f);                   // blanc
+    glDrawArrays(GL_LINE_STRIP, 0, path_vertices.size());             // Dessin de la trajectoire
+    glBindVertexArray(0);                                             // Désactivation du VAO
 
     // Affichage du maillage sur la scène
-    glLineWidth(2);  // Épaisseur de trait normale
-    // glUseProgram(mesh_shader);                                                // Utilisation du shader du maillage
+    glLineWidth(2);                                                           // Épaisseur de trait normale
     glBindVertexArray(mesh_vao);                                              // Bind du VAO du maillage
     MVPid = glGetUniformLocation(mesh_shader, "MVP");                         // Bind de la matrice MVP
     glUniformMatrix4fv(MVPid, 1, GL_FALSE, &MVP[0][0]);                       // Envoi de la matrice MVP
-    GLint color_uniform = glGetUniformLocation(mesh_shader, "inputColor");    // Bind de la couleur
+    color_uniform = glGetUniformLocation(mesh_shader, "inputColor");          // Bind de la couleur
     glUniform4f(color_uniform, 0.1f, 0.9f, 0.7f, 1.0f);                       // blanc
     glDrawElements(GL_TRIANGLES, mesh_faces.size() * 3, GL_UNSIGNED_INT, 0);  // Dessin du maillage
-    glBindVertexArray(0);
+    glBindVertexArray(0);                                                     // Désactivation du VAO
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    // Affichage du maillage sur la scène
-    glLineWidth(1);  // Épaisseur de trait normale
-    // glUseProgram(mesh_shader);                                                // Utilisation du shader du maillage
+    // Affichage des faces sur la scène
     glBindVertexArray(mesh_vao);                                              // Bind du VAO du maillage
     MVPid = glGetUniformLocation(mesh_shader, "MVP");                         // Bind de la matrice MVP
     glUniformMatrix4fv(MVPid, 1, GL_FALSE, &MVP[0][0]);                       // Envoi de la matrice MVP
-    GLint color_uniform2 = glGetUniformLocation(mesh_shader, "inputColor");   // Bind de la couleur
-    glUniform4f(color_uniform2, 0.9f, 0.7f, 0.0f, 0.1f);                      // blanc
+    color_uniform = glGetUniformLocation(mesh_shader, "inputColor");          // Bind de la couleur
+    glUniform4f(color_uniform, 0.9f, 0.7f, 0.0f, 0.1f);                       // blanc
     glDrawElements(GL_TRIANGLES, mesh_faces.size() * 3, GL_UNSIGNED_INT, 0);  // Dessin du maillage
     glBindVertexArray(0);                                                     // Désactivation du VAO
+
+    /*
+        // Affichage du maillage de la sphère sur la scène
+        glBindVertexArray(sphere_vao);                                              // Bind du VAO du maillage
+        MVPid = glGetUniformLocation(mesh_shader, "MVP");                           // Bind de la matrice MVP
+        glUniformMatrix4fv(MVPid, 1, GL_FALSE, &MVP[0][0]);                         // Envoi de la matrice MVP
+        color_uniform = glGetUniformLocation(mesh_shader, "inputColor");            // Bind de la couleur
+        glUniform4f(color_uniform, 0.9f, 0.7f, 0.0f, 0.1f);                         // blanc
+        glDrawElements(GL_TRIANGLES, sphere_faces.size() * 3, GL_UNSIGNED_INT, 0);  // Dessin du maillage
+        glBindVertexArray(0); */
 
     // Échange des buffers d'affichage
     SDL_GL_SwapBuffers();

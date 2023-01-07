@@ -28,6 +28,16 @@ int main(int argc, char **argv) {
     // On lit le fichier .obj et on remplit les vecteurs verticesIn et facesIn
     readObjFile("meshes/ours.obj", verticesIn, facesIn);
 
+    // On fait de même pour la sphère
+    vector<vertex> verticesSphereIn;
+    vector<face> facesSphereIn;
+    /* vector<he_vertex *> verticesSphereOut;
+    vector<he_face *> facesSphereOut;
+    vector<he_halfedge *> halfedgesSphereOut; */
+
+    // On lit le fichier .obj et on remplit les vecteurs verticesSphereIn et facesSphereIn
+    readObjFile("meshes/sphere.obj", verticesSphereIn, facesSphereIn);
+
     // On remplit les 3 vecteurs du maillage half-edge à partir des vecteurs
     // verticesIn et facesIn
     buildHalfEdge(verticesIn, facesIn, verticesOut, facesOut, halfedgesOut);
@@ -52,7 +62,7 @@ int main(int argc, char **argv) {
         path.push_back(verticesIn[sommets_path[i] - 1]);
     }
 
-    bindExternalArrays(verticesIn, facesIn, path);
+    bindExternalArrays(verticesIn, facesIn, path, verticesSphereIn, facesSphereIn);
     initDisplay();
 
     // Libération de la mémoire
