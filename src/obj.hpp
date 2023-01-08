@@ -10,8 +10,6 @@
 #include "gl_structs.hpp"
 using namespace std;
 
-#define ZOOM_VAL 1.f
-
 // === Fonctions ===
 
 /**
@@ -22,9 +20,9 @@ using namespace std;
  * @param vertices Vecteur de sommets à remplir (voir la structure v dans
  * obj.hpp)
  * @param faces Vecteur de faces à remplir (voir la structure f dans obj.hpp)
+ * @param zoom Facteur de zoom à appliquer aux sommets
  * @return void
  */
-void readObjFile(const char *filename, vector<vertex> &vertices,
-                 vector<face> &faces);
+void readObjFile(const char *filename, vector<vertex> &vertices, vector<face> &faces, float zoom);
 
 #endif /* OBJ_HPP */

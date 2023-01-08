@@ -1,7 +1,7 @@
 #include "obj.hpp"
 
 void readObjFile(const char *filename, vector<vertex> &vertices,
-                 vector<face> &faces) {
+                 vector<face> &faces, float zoom) {
     // Ouverture du fichier
     ifstream file(filename);
     // Si le fichier n'a pas pu être ouvert quitter avec un message d'erreur
@@ -15,7 +15,6 @@ void readObjFile(const char *filename, vector<vertex> &vertices,
         istringstream iss(line);
         string word;
         iss >> word;
-        float zoom = ZOOM_VAL;
         // Si le premier mot est "v", ajout d'un nouveau sommet au tableau
         if (word == "v") {
             vertex vertex;
