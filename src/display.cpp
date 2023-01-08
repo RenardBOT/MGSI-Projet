@@ -9,8 +9,11 @@
 glm::mat4 Projection;  // Matrice de projection
 glm::mat4 View;        // Matrice de vue
 glm::mat4 Model;       // Matrice de modèle
+glm::mat4 Model_sphere;
 glm::mat4 MVP;         // Matrice MVP qui est le produit des 3 matrices précédentes
+glm::mat4 MVP_sphere;  // Matrice MVP pour la sphère
 GLuint MVPid;          // Id de la variable uniforme MVP dans le shader
+GLuint MVPid_sphere;   // Id de la variable uniforme MVP dans le shader de la sphère
 
 /* ---------------- Données du maillage et de la trajectoire ---------------- */
 
@@ -36,6 +39,9 @@ GLuint sphere_ibo = 0;
 
 /* --------------------------- Affichage à l'écran -------------------------- */
 
+bool face_mode = true;                 // Mode face pleine
+bool wireframe_mode = true;            // Mode fil de fer
+bool path_mode = true;                 // Affichage de la trajectoire
 char presse;                           // Touche enfoncée
 int anglex, angley, x, y, xold, yold;  // Variables pour la rotation de la scène
 SDL_Surface* screen;                   // Surface pour l'affichage
@@ -67,6 +73,10 @@ void genMatrices(void) {
     Model = glm::mat4(1.0f);
     Model = glm::translate(Model, glm::vec3(-.0f, -.0f, -.0f));
     Model = glm::scale(Model, glm::vec3(1.0f * zoom, 1.0f * zoom, 1.0f * zoom));
+
+    Model_sphere = glm::mat4(1.0f);
+    Model_sphere = glm::translate(Model_sphere, glm::vec3(path_vertices[0].x * zoom, path_vertices[0].y * zoom, path_vertices[0].z * zoom));
+    Model_sphere = glm::scale(Model_sphere, glm::vec3(1.0f * zoom, 1.0f * zoom, 1.0f * zoom));
 
     // MVP est donc le produit des 3 matrices (l'ordre est important dans une multiplication de matrices!)
     MVP = Projection * View * Model;
@@ -171,14 +181,14 @@ int initDisplay() {
         return 1;
     }
 
-    glEnable(GL_DEPTH_TEST);
-
     // Initialisation de GLEW
     GLenum err = glewInit();
     if (GLEW_OK != err) {
         // ERREUR : initialisation de GLEW a échoué
         std::cerr << "Error: " << glewGetErrorString(err) << std::endl;
     }
+
+    glEnable(GL_DEPTH_TEST);
 
     // affichage des infos sur la carte graphique
     std::cout << std::endl
@@ -196,6 +206,10 @@ int initDisplay() {
     genBuffers();
     fillMeshBuffers();
     fillPathBuffers();
+    fillMeshSphereBuffers();
+
+    // Taux de rafraîchissement de l'écran à 1Hz
+    // glfwSwapInterval(1);
 
     // Boucle principale de gestion des évènements
     bool done = false;
@@ -228,53 +242,53 @@ int initDisplay() {
 void display() {
     // Effacement de l'écran
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // glEnable(GL_DEPTH_TEST);  // Activation du test de profondeur
+
+    GLint color_uniform;  // Uniform pour la couleur
+
+    MVP = Projection * View * Model;  // Calcul de la matrice MV
 
     // Qu'il s'agisse de la trajectoire ou du maillage, on dessine des lignes
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    GLint color_uniform;  // Uniform pour la couleur
+    // Affichage du maillage sur la scène
+    if (wireframe_mode) {
+        glLineWidth(2);                                                           // Épaisseur de trait normale
+        glBindVertexArray(mesh_vao);                                              // Bind du VAO du maillage
+        MVPid = glGetUniformLocation(mesh_shader, "MVP");                         // Bind de la matrice MVP
+        glUniformMatrix4fv(MVPid, 1, GL_FALSE, &MVP[0][0]);                       // Envoi de la matrice MVP
+        color_uniform = glGetUniformLocation(mesh_shader, "inputColor");          // Bind de la couleur
+        glUniform4f(color_uniform, 0.1f, 0.9f, 0.7f, 1.0f);                       // Couleur verte
+        glDrawElements(GL_TRIANGLES, mesh_faces.size() * 3, GL_UNSIGNED_INT, 0);  // Dessin du maillage
+        glBindVertexArray(0);                                                     // Désactivation du VAO
+    }
 
     // Affichage de la trajectoire sur la scène
-    glLineWidth(8);                                                   // Grosse épaisseur de trait
-    glUseProgram(mesh_shader);                                        // Utilisation du shader de la trajectoire
-    glBindVertexArray(path_vao);                                      // Bind du VAO de la trajectoire
-    MVPid = glGetUniformLocation(mesh_shader, "MVP");                 // Bind de la matrice MVP
-    glUniformMatrix4fv(MVPid, 1, GL_FALSE, &MVP[0][0]);               // Envoi de la matrice MVP
-    color_uniform = glGetUniformLocation(mesh_shader, "inputColor");  // Bind de la couleur
-    glUniform4f(color_uniform, 1.f, 1.f, 1.f, 1.f);                   // blanc
-    glDrawArrays(GL_LINE_STRIP, 0, path_vertices.size());             // Dessin de la trajectoire
-    glBindVertexArray(0);                                             // Désactivation du VAO
+    if (path_mode) {
+        glLineWidth(8);                                                   // Grosse épaisseur de trait
+        glUseProgram(mesh_shader);                                        // Utilisation du shader de la trajectoire
+        glBindVertexArray(path_vao);                                      // Bind du VAO de la trajectoire
+        MVPid = glGetUniformLocation(mesh_shader, "MVP");                 // Bind de la matrice MVP
+        glUniformMatrix4fv(MVPid, 1, GL_FALSE, &MVP[0][0]);               // Envoi de la matrice MVP
+        color_uniform = glGetUniformLocation(mesh_shader, "inputColor");  // Bind de la couleur
+        glUniform4f(color_uniform, 1.f, 1.f, 1.f, 1.f);                   // Couleur blanche
+        glDrawArrays(GL_LINE_STRIP, 0, path_vertices.size());             // Dessin de la trajectoire
+        glBindVertexArray(0);                                             // Désactivation du VAO
+    }
 
-    // Affichage du maillage sur la scène
-    glLineWidth(2);                                                           // Épaisseur de trait normale
-    glBindVertexArray(mesh_vao);                                              // Bind du VAO du maillage
-    MVPid = glGetUniformLocation(mesh_shader, "MVP");                         // Bind de la matrice MVP
-    glUniformMatrix4fv(MVPid, 1, GL_FALSE, &MVP[0][0]);                       // Envoi de la matrice MVP
-    color_uniform = glGetUniformLocation(mesh_shader, "inputColor");          // Bind de la couleur
-    glUniform4f(color_uniform, 0.1f, 0.9f, 0.7f, 1.0f);                       // blanc
-    glDrawElements(GL_TRIANGLES, mesh_faces.size() * 3, GL_UNSIGNED_INT, 0);  // Dessin du maillage
-    glBindVertexArray(0);                                                     // Désactivation du VAO
-
+    // Pour les faces du maillage, dessin de polygones pleins
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     // Affichage des faces sur la scène
-    glBindVertexArray(mesh_vao);                                              // Bind du VAO du maillage
-    MVPid = glGetUniformLocation(mesh_shader, "MVP");                         // Bind de la matrice MVP
-    glUniformMatrix4fv(MVPid, 1, GL_FALSE, &MVP[0][0]);                       // Envoi de la matrice MVP
-    color_uniform = glGetUniformLocation(mesh_shader, "inputColor");          // Bind de la couleur
-    glUniform4f(color_uniform, 0.9f, 0.7f, 0.0f, 0.1f);                       // blanc
-    glDrawElements(GL_TRIANGLES, mesh_faces.size() * 3, GL_UNSIGNED_INT, 0);  // Dessin du maillage
-    glBindVertexArray(0);                                                     // Désactivation du VAO
-
-    /*
-        // Affichage du maillage de la sphère sur la scène
-        glBindVertexArray(sphere_vao);                                              // Bind du VAO du maillage
-        MVPid = glGetUniformLocation(mesh_shader, "MVP");                           // Bind de la matrice MVP
-        glUniformMatrix4fv(MVPid, 1, GL_FALSE, &MVP[0][0]);                         // Envoi de la matrice MVP
-        color_uniform = glGetUniformLocation(mesh_shader, "inputColor");            // Bind de la couleur
-        glUniform4f(color_uniform, 0.9f, 0.7f, 0.0f, 0.1f);                         // blanc
-        glDrawElements(GL_TRIANGLES, sphere_faces.size() * 3, GL_UNSIGNED_INT, 0);  // Dessin du maillage
-        glBindVertexArray(0); */
+    if (face_mode) {
+        glBindVertexArray(mesh_vao);                                              // Bind du VAO du maillage
+        MVPid = glGetUniformLocation(mesh_shader, "MVP");                         // Bind de la matrice MVP
+        glUniformMatrix4fv(MVPid, 1, GL_FALSE, &MVP[0][0]);                       // Envoi de la matrice MVP
+        color_uniform = glGetUniformLocation(mesh_shader, "inputColor");          // Bind de la couleur
+        glUniform4f(color_uniform, 0.5f, 0.3f, 0.0f, 0.1f);                       // Couleur marron
+        glDrawElements(GL_TRIANGLES, mesh_faces.size() * 3, GL_UNSIGNED_INT, 0);  // Dessin du maillage
+        glBindVertexArray(0);
+    }
 
     // Échange des buffers d'affichage
     SDL_GL_SwapBuffers();
@@ -283,28 +297,89 @@ void display() {
 void keyboard(SDL_Event event) {
     switch (event.key.keysym.sym) {
         // Appui sur echap -> Quitter
-        case SDLK_ESCAPE:
+        case SDLK_ESCAPE: {
             exit(0);
             break;
+        }
+        // Appui sur f -> Afficher ou non des faces
+        case SDLK_w: {
+            wireframe_mode = !wireframe_mode;
+            break;
+        }
+        // Appui sur p -> Afficher ou non la trajectoire
+        case SDLK_p: {
+            path_mode = !path_mode;
+            break;
+        }
+        // Appui sur f -> Afficher ou non des faces
+        case SDLK_f: {
+            face_mode = !face_mode;
+            break;
+        }
         // Rotation de la scène
+        // arrow left ou q -> Déplacement de la caméra vers la gauche
+        case SDLK_q:
         case SDLK_LEFT: {
-            glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), (float)(1.f / 360.f) * 20, glm::vec3(0, 1, 0));
-            MVP = MVP * rotation;
+            View = glm::rotate(View, (float)(1.f / 360.f) * 20, glm::vec3(0, 1, 0));
             break;
         }
+        // arrow right ou d -> Déplacement de la caméra vers la droite
+        case SDLK_d:
         case SDLK_RIGHT: {
-            glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), (float)(1.f / 360.f) * -20, glm::vec3(0, 1, 0));
-            MVP = MVP * rotation;
+            View = glm::rotate(View, (float)(1.f / 360.f) * -20, glm::vec3(0, 1, 0));
             break;
         }
+        // arrow up ou z -> Déplacement de la caméra vers le haut
+        case SDLK_z:
         case SDLK_UP: {
-            glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), (float)(1.f / 360.f) * 20, glm::vec3(0, 0, 1));
-            MVP = MVP * rotation;
+            View = glm::rotate(View, (float)(1.f / 360.f) * 20, glm::vec3(1, 0, 0));
             break;
         }
+        // arrow down ou s -> Déplacement de la caméra vers le bas
+        case SDLK_s:
         case SDLK_DOWN: {
-            glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), (float)(1.f / 360.f) * -20, glm::vec3(0, 0, 1));
-            MVP = MVP * rotation;
+            View = glm::rotate(View, (float)(1.f / 360.f) * -20, glm::vec3(1, 0, 0));
+
+            break;
+        }
+        // a -> Rotation de la caméra vers la gauche
+        case SDLK_a: {
+            View = glm::rotate(View, (float)(1.f / 360.f) * 20, glm::vec3(0, 0, 1));
+            break;
+        }
+        // e -> Rotation de la caméra vers la droite
+        case SDLK_e: {
+            View = glm::rotate(View, (float)(1.f / 360.f) * -20, glm::vec3(0, 0, 1));
+            break;
+        }
+        // o -> Déplacement de la caméra vers le haut
+        case SDLK_o: {
+            View = glm::translate(View, glm::vec3(0, 0.1, 0));
+            break;
+        }
+        // u -> Déplacement de la caméra vers le bas
+        case SDLK_u: {
+            View = glm::translate(View, glm::vec3(0, -0.1, 0));
+            break;
+        }
+        // j -> Déplacement de la caméra vers la gauche
+        case SDLK_l: {
+            View = glm::translate(View, glm::vec3(-0.1, 0, 0));
+            break;
+        }
+            // k -> Déplacement de la caméra vers l'arrière
+        case SDLK_j: {
+            View = glm::translate(View, glm::vec3(0.1, 0, 0));
+            break;
+        }
+        // l -> Déplacement de la caméra vers la droite
+        case SDLK_k: {
+            View = glm::translate(View, glm::vec3(0, 0, -0.1));
+            break;
+        }
+        // i -> Déplacement de la caméra vers l'avant
+        case SDLK_i: {
+            View = glm::translate(View, glm::vec3(0, 0, 0.1));
             break;
         }
 

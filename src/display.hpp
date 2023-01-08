@@ -2,6 +2,7 @@
 #define DISPLAY_HPP
 
 #include <GL/glew.h>
+
 #include <SDL/SDL.h>
 
 #include <cstdlib>
