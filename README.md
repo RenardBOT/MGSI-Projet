@@ -19,11 +19,11 @@ Se déplacer dans bin, et y executer mgsi ne marchera PAS.\
 
 Il est possible (et nécessaire) d'inclure des arguments lors de l'execution :
 
-**NECESSAIRE** `-a <int> :` Sommet de départ de la trajectoire (ligne du fichier obj)
-**NECESSAIRE** `-b <int> :` Sommet d'arrivée de la trajectoire (ligne du fichier obj)
-**NECESSAIRE** `-p "nom-fichier" :` Nom du fichier obj SANS L'EXTENSION, dans le dossier meshes (par exemple `"ours"` ou `"sphere"`)
-**NECESSAIRE** `-d <0|1> :` Choix de l'algorithme (0 pour dijkstra non pondéré, 1 pour dijkstra pondéré)
-**OPTIONNEL** `-z <float> :` Valeur du zoom (par défaut 1.0)
+- **NECESSAIRE** `-a <int> :` Sommet de départ de la trajectoire (ligne du fichier obj)
+- **NECESSAIRE** `-b <int> :` Sommet d'arrivée de la trajectoire (ligne du fichier obj)
+- **NECESSAIRE** `-p "nom-fichier" :` Nom du fichier obj SANS L'EXTENSION, dans le dossier meshes (par exemple `"ours"` ou `"sphere"`)
+- **NECESSAIRE** `-d <0|1> :` Choix de l'algorithme (0 pour dijkstra non pondéré, 1 pour dijkstra pondéré)
+- **OPTIONNEL** `-z <float> :` Valeur du zoom (par défaut 1.0)
 
 ## Entrées clavier
 
@@ -31,27 +31,27 @@ Il est possible de manipuler la scène à l'appui de touches du clavier :
 
 ### Rendu
 
-`w :` Activer/Desactiver le mode fil de fer
-`f :` Activer/Desactiver le mode faces pleines
-`p :` Activer/Desactiver l'affichage de la trajectoire
+- `w :` Activer/Desactiver le mode fil de fer
+- `f :` Activer/Desactiver le mode faces pleines
+- `p :` Activer/Desactiver l'affichage de la trajectoire
 
 ### Rotations (ZQSD)
 
-`z :` Rotation de la caméra vers l'avant
-`s :` Rotation de la caméra vers le bas
-`q :` Rotation de la caméra vers la gauche
-`d :` Rotation de la caméra vers la droite
-`a :` Rotation de la caméra vers le haut
-`e :` Rotation de la caméra vers le bas
+- `z :` Rotation de la caméra vers l'avant
+- `s :` Rotation de la caméra vers l'arrière
+- `a :` Rotation de la caméra vers la gauche
+- `e :` Rotation de la caméra vers la droite
+- `a :` Rotation de la caméra vers la gauche centrée sur l'origine
+- `e :` Rotation de la caméra vers la droite centrée sur l'origine
 
 ### Translation (IJKL)
 
-`i :` Translation de la caméra vers l'avant
-`k :` Translation de la caméra vers le bas
-`j :` Translation de la caméra vers la gauche
-`l :` Translation de la caméra vers la droite
-`u :` Translation de la caméra vers le haut
-`o :` Translation de la caméra vers le bas
+- `i :` Translation de la caméra vers l'avant
+- `k :` Translation de la caméra vers l'arrière
+- `j :` Translation de la caméra vers la gauche
+- `l :` Translation de la caméra vers la droite
+- `u :` Translation de la caméra vers le bas
+- `o :` Translation de la caméra vers le haut
 
 ## Installation des librairies
 Plusieurs librairies sont nécéssaires pour le faire fonctionner le projet :\
