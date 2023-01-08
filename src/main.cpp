@@ -105,6 +105,13 @@ int main(int argc, char **argv) {
         path.push_back(verticesIn[sommets_path[i] - 1]);
     }
 
+    // Affichage de la longueur du chemin en calculant la distance entre chaque sommet
+    float distance = 0;
+    for (size_t i = 0; i < path.size() - 1; i++) {
+        distance += sqrt(pow(path[i].x - path[i + 1].x, 2) + pow(path[i].y - path[i + 1].y, 2) + pow(path[i].z - path[i + 1].z, 2));
+    }
+    cout << "Longueur du chemin: " << distance << endl;
+
     bindExternalArrays(verticesIn, facesIn, path, verticesSphereIn, facesSphereIn);
     initDisplay();
 
