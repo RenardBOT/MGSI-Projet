@@ -56,6 +56,7 @@ Il est possible de manipuler la scène à l'appui de touches du clavier :
 ## Installation des librairies
 Plusieurs librairies sont nécéssaires pour le faire fonctionner le projet :\
 **SDL 1.2, GLM et GLEW**\
+Version de **GLSL : 4.30** (shaders compatibles 4.60 entre autres)
 Pour les installer : 
 ```bash
 sudo apt-get install libsdl1.2-dev libglm-dev libglew-dev    
